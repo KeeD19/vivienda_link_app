@@ -73,10 +73,14 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
-                            child: Image.asset(
-                              'assets/images/logoVivienda.jpeg',
-                              fit: BoxFit.contain,
-                              width: 100,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.asset(
+                                'assets/images/logoVivienda.jpeg',
+                                // scale: 0.3,
+                                fit: BoxFit.contain,
+                                width: 100,
+                              ),
                             ),
                           ),
                           const SizedBox(
