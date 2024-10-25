@@ -42,6 +42,7 @@ class AuthProvider with ChangeNotifier {
       String idUser = response['idUser'];
 
       if (token != "") {
+        print("todo bien");
         await _saveLocalService.saveData("auth_token", token);
         await _saveLocalService.saveData("user", user);
         await _saveLocalService.saveData("idUser", idUser);

@@ -44,6 +44,11 @@ class Order {
       required this.estadoPago,
       required this.comentarios});
 
+  @override
+  String toString() {
+    return 'Order(orden: $orden, description: $tipoServicio)';
+  }
+
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
         idOrdenTrabajo: json['idOrdenTrabajo'],

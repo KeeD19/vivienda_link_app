@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/Orders_provider.dart';
 import '../../utils/SpinnerLoader.dart';
+import '../../screens/orders/DetailsOrders.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -142,13 +143,12 @@ class _OrdersScreenState extends State<DashboardPage> {
                           padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
                           child: GestureDetector(
                             onTap: () {
-                              // Navigator.push(
-                              //   context
-                              //   // MaterialPageRoute(
-                              //   //   // builder: (context) =>
-                              //   //       // FolderPage(path: item.path!),
-                              //   // ),
-                              // );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        DetailsOrderPage(order: order)),
+                              );
                             },
                             child: Container(
                               alignment: Alignment.center,
@@ -213,7 +213,7 @@ class _OrdersScreenState extends State<DashboardPage> {
                     ))
                   ],
                 )
-              : Center(child: Text('No hay órdenes')),
+              : const Center(child: Text('No hay órdenes')),
     );
   }
 }
