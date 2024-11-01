@@ -8,7 +8,12 @@ class SaveLocalService {
 
   Future<String?> getData(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key); // Obtener el token guardado
+    String? id = prefs.getString(key);
+    if (id == null) {
+      return "0";
+    } else {
+      return id;
+    }
   }
 
   Future<void> clearData(String key) async {

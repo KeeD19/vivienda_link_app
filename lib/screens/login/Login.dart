@@ -9,7 +9,7 @@ import '../register/Register.dart';
 class LoginPage extends StatefulWidget {
   final VoidCallback showLoginPage;
 
-  const LoginPage({Key? key, required this.showLoginPage}) : super(key: key);
+  const LoginPage({super.key, required this.showLoginPage});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -206,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                                 const SizedBox(
-                                  width: 40,
+                                  width: 25,
                                 ),
                                 // Padding(
                                 //   padding:
@@ -245,19 +245,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ],
             ),
-            // const SizedBox(
-            //   height: 5,
-            // ),
-            // Consumer<AuthProvider>(
-            //   builder: (context, authProvider, child) {
-            //     return authProvider.errorMessage.isNotEmpty
-            //         ? Text(
-            //             authProvider.errorMessage,
-            //             style: TextStyle(color: Colors.red),
-            //           )
-            //         : Container();
-            //   },
-            // ),
             authProvider.isLoading
                 ? Center(child: Spinner())
                 : Padding(
@@ -321,9 +308,7 @@ class _LoginPageState extends State<LoginPage> {
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              RegisterPage(showSignUpPage: () {
-                                print("Register page shown");
-                              })),
+                              RegisterPage(showSignUpPage: () {})),
                     );
 
                     if (result != null) {

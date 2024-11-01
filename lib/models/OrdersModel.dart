@@ -1,5 +1,4 @@
-// import 'dart:convert';
-// import 'package:intl/intl.dart';
+import './ComentariosModel.dart';
 
 class Order {
 //   Codec<String, String> stringToBase64 = utf8.fuse(base64);
@@ -15,6 +14,7 @@ class Order {
   final String descripcionSolicitud;
   final String estado;
   final int idProveedor;
+  final int idCliente;
   final int fase;
   final int aprobacion;
   final archivo;
@@ -22,7 +22,7 @@ class Order {
   final String proveedor;
   final double monto;
   final int estadoPago;
-  final comentarios;
+  final List<Comentarios> comentarios;
 
   Order(
       {required this.idOrdenTrabajo,
@@ -35,6 +35,7 @@ class Order {
       required this.descripcionSolicitud,
       required this.estado,
       required this.idProveedor,
+      required this.idCliente,
       required this.fase,
       required this.aprobacion,
       required this.archivo,
@@ -51,23 +52,27 @@ class Order {
 
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
-        idOrdenTrabajo: json['idOrdenTrabajo'],
-        orden: json['orden'],
-        idServicio: json['idServicio'],
-        tipoServicio: json['tipoServicio'],
-        direccion: json['direccion'],
-        citaFecha: json['citaFecha'],
-        recomendacion: json['recomendacion'],
-        descripcionSolicitud: json['descripcionSolicitud'],
-        estado: json['estado'],
-        idProveedor: json['idProveedor'],
-        fase: json['fase'],
-        aprobacion: json['aprobacion'],
-        archivo: json['archivo'],
-        extencionArchivo: json['extencionArchivo'],
-        proveedor: json['proveedor'],
-        monto: json['monto'],
-        estadoPago: json['estadoPago'],
-        comentarios: json['comentarios']);
+      idOrdenTrabajo: json['idOrdenTrabajo'],
+      orden: json['orden'],
+      idServicio: json['idServicio'],
+      tipoServicio: json['tipoServicio'],
+      direccion: json['direccion'],
+      citaFecha: json['citaFecha'],
+      recomendacion: json['recomendacion'],
+      descripcionSolicitud: json['descripcionSolicitud'],
+      estado: json['estado'],
+      idProveedor: json['idProveedor'],
+      idCliente: json['idCliente'],
+      fase: json['fase'],
+      aprobacion: json['aprobacion'],
+      archivo: json['archivo'],
+      extencionArchivo: json['extencionArchivo'],
+      proveedor: json['proveedor'],
+      monto: json['monto'],
+      estadoPago: json['estadoPago'],
+      comentarios: (json['comentarios'] as List<dynamic>)
+          .map((item) => Comentarios.fromJson(item))
+          .toList(),
+    );
   }
 }

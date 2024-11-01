@@ -7,9 +7,11 @@ class AuthProvider with ChangeNotifier {
   final SaveLocalService _saveLocalService = SaveLocalService();
   String _errorMessage = '';
   String _successMessage = '';
+  int _userValidate = 0;
   bool _isLoading = false;
   String get errorMessage => _errorMessage;
   String get successMessage => _successMessage;
+  int get userValidate => _userValidate;
   bool get isLoading => _isLoading;
   // login
   String? username;
@@ -42,11 +44,11 @@ class AuthProvider with ChangeNotifier {
       String idUser = response['idUser'];
 
       if (token != "") {
-        print("todo bien");
         await _saveLocalService.saveData("auth_token", token);
         await _saveLocalService.saveData("user", user);
         await _saveLocalService.saveData("idUser", idUser);
         await _saveLocalService.saveData("sesion", "true");
+        _userValidate = int.tryParse(idUser) ?? 0;
         _isAuthenticated = true;
       } else {
         _isAuthenticated = false;
@@ -99,6 +101,12 @@ class AuthProvider with ChangeNotifier {
     await _saveLocalService.clearData("idauth_token");
     await _saveLocalService.clearData("user");
     _isAuthenticated = false;
+    _userValidate = 0;
     notifyListeners();
+  }
+
+  Future<void> verifySesion() async {
+    String? idUser = await _saveLocalService.getData("idUser");
+    _userValidate = int.tryParse(idUser!) ?? 0;
   }
 }

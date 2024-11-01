@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 // import '../../providers/Auth_provider.dart';
 
 class PaymentsPage extends StatefulWidget {
+  const PaymentsPage({super.key});
+
   @override
   _PaymentsPageState createState() => _PaymentsPageState();
 }
@@ -10,6 +12,6 @@ class PaymentsPage extends StatefulWidget {
 class _PaymentsPageState extends State<PaymentsPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Text("Hola Payments"));
+    return const Scaffold(body: Text("Hola Payments"));
   }
 }
