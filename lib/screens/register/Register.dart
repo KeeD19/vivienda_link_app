@@ -51,7 +51,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Future signUp() async {
     if (checkPassowrd()) {
       if (validateEmail(_emailController.text) != null) {
-        await ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text("Ingresa un correo valido"),
             duration: const Duration(seconds: 3),
@@ -67,7 +67,7 @@ class _RegisterPageState extends State<RegisterPage> {
         await Provider.of<AuthProvider>(context, listen: false).register();
       }
     } else {
-      await ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text("Las contraseñas no coinsiden"),
           duration: const Duration(seconds: 3),

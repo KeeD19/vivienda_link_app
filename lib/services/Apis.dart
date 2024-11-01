@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../services/SaveLocalService.dart';
+// import '../services/SaveLocalService.dart';
 
 class ApiService {
   final String baseUrl = "http://localhost:5023/api"; // URL base de tu API
-  final SaveLocalService _saveLocalService = SaveLocalService();
+  // final SaveLocalService _saveLocalService = SaveLocalService();
 
   // Método para obtener datos (GET)
   Future<http.Response> getData(String endpoint) async {
@@ -24,7 +24,6 @@ class ApiService {
       },
       body: json.encode(data),
     );
-
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
@@ -34,19 +33,36 @@ class ApiService {
   }
 
   // Método para actualizar datos (PUT)
-  Future<void> updateData(String endpoint, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> updateData(
+      String endpoint, Map<String, dynamic> data) async {
+    final url = Uri.parse('$baseUrl/$endpoint');
     final response = await http.put(
-      Uri.parse('$baseUrl/$endpoint'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
+      url,
+      headers: {
+        'Content-Type': 'application/json',
       },
-      body: jsonEncode(data),
+      body: json.encode(data),
     );
-
-    if (response.statusCode != 200) {
-      throw Exception('Error al actualizar los datos');
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      Map<String, dynamic> errorResponse = json.decode(response.body);
+      throw Exception(errorResponse['message']);
     }
   }
+  // Future<void> updateData(String endpoint, Map<String, dynamic> data) async {
+  //   final response = await http.put(
+  //     Uri.parse('$baseUrl/$endpoint'),
+  //     headers: <String, String>{
+  //       'Content-Type': 'application/json; charset=UTF-8',
+  //     },
+  //     body: jsonEncode(data),
+  //   );
+
+  //   if (response.statusCode != 200) {
+  //     throw Exception('Error al actualizar los datos');
+  //   }
+  // }
 
   // Método para eliminar datos (DELETE)
   Future<void> deleteData(String endpoint) async {
