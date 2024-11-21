@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:vivienda_link_app/screens/home/Home.dart';
 import '../../providers/Auth_provider.dart';
 import '../../utils/SpinnerLoader.dart';
+import '../planScreen/PlanView.dart';
 import '../register/Register.dart';
 
 class LoginPage extends StatefulWidget {
@@ -23,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     final authProvider = Provider.of<AuthProvider>(context);
     // EmailValidatorFlutter emailValidatorFlutter = EmailValidatorFlutter();
     return Scaffold(
-      // backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -53,194 +55,182 @@ class _LoginPageState extends State<LoginPage> {
 
                 //container
                 Positioned(
-                  top: 120,
+                  top: 100,
                   left: 10,
                   right: 10,
                   bottom: 0,
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                     child: Container(
-                      // height: MediaQuery.of(context).size.height *
-                      //     0.9, //chnage old was 700
+                        // height: MediaQuery.of(context).size.height *
+                        //     0.9, //chnage old was 700
 
-                      width: 250,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.asset(
-                                'assets/images/logoVivienda.jpeg',
-                                // scale: 0.3,
-                                fit: BoxFit.contain,
-                                width: 100,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15),
-                            child: Text(
-                              "Ingresa tus credenciales",
-                              style: GoogleFonts.lato(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          //email textfield
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15),
-                            child: TextField(
-                              cursorColor: Colors.white,
-                              decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
+                        height: 1000,
+                        width: 350,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
+                                child: ClipRRect(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(
-                                    color: Colors.grey,
-                                    width: 0.8,
+                                  child: Image.asset(
+                                    'assets/images/logoVivienda.jpeg',
+                                    // scale: 0.3,
+                                    fit: BoxFit.contain,
+                                    width: 100,
                                   ),
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(
-                                    color: Colors.purpleAccent,
-                                    width: 0.8,
-                                  ),
-                                ),
-                                labelText: " Email ",
-                                labelStyle: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary),
                               ),
-                              onChanged: (value) =>
-                                  authProvider.username = value,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          //password textfield
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15),
-                            child: TextField(
-                                cursorColor: Colors.white,
-                                obscureText: isObscure,
-                                decoration: InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(
-                                      color: Colors.grey,
-                                      width: 0.8,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(
-                                      color: Colors.purpleAccent,
-                                      width: 0.8,
-                                    ),
-                                  ),
-                                  labelText: " Password ",
-                                  labelStyle: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary),
-                                  suffixIcon: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        isObscure = !isObscure;
-                                      });
-                                    },
-                                    icon: Icon(
-                                      isObscure
-                                          ? Icons.lock
-                                          : Icons
-                                              .no_encryption_gmailerrorred_rounded,
-                                    ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 15),
+                                child: Text(
+                                  "Ingresa tus credenciales",
+                                  style: GoogleFonts.lato(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.grey[600],
                                   ),
                                 ),
-                                onChanged: (value) =>
-                                    authProvider.password = value),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
+                              ),
+                              const SizedBox(
+                                height: 40,
+                              ),
+                              //email textfield
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 15),
+                                child: TextField(
+                                  cursorColor: Colors.white,
+                                  decoration: InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: const BorderSide(
+                                        color: Colors.grey,
+                                        width: 0.8,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: const BorderSide(
+                                        color: Colors.purpleAccent,
+                                        width: 0.8,
+                                      ),
+                                    ),
+                                    labelText: " Email ",
+                                    labelStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                                  ),
+                                  onChanged: (value) => authProvider.username = value,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              //password textfield
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 15),
+                                child: TextField(
+                                    cursorColor: Colors.white,
+                                    obscureText: isObscure,
+                                    decoration: InputDecoration(
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: const BorderSide(
+                                          color: Colors.grey,
+                                          width: 0.8,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: const BorderSide(
+                                          color: Colors.purpleAccent,
+                                          width: 0.8,
+                                        ),
+                                      ),
+                                      labelText: " Password ",
+                                      labelStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                                      suffixIcon: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            isObscure = !isObscure;
+                                          });
+                                        },
+                                        icon: Icon(
+                                          isObscure ? Icons.lock : Icons.no_encryption_gmailerrorred_rounded,
+                                        ),
+                                      ),
+                                    ),
+                                    onChanged: (value) => authProvider.password = value),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
 
-                          //remember--forget row
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Row(
-                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                IconButton(
-                                  padding: EdgeInsets.zero,
-                                  onPressed: () {
-                                    setState(() {
-                                      isRember = !isRember;
-                                    });
-                                  },
-                                  icon: Icon(
-                                    isRember
-                                        ? Icons.check_box_outline_blank
-                                        : Icons.check_box,
-                                  ),
+                              //remember--forget row
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                child: Row(
+                                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    IconButton(
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () {
+                                        setState(() {
+                                          isRember = !isRember;
+                                        });
+                                      },
+                                      icon: Icon(
+                                        isRember ? Icons.check_box_outline_blank : Icons.check_box,
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Remember me',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 25,
+                                    ),
+                                    // Padding(
+                                    //   padding:
+                                    //       const EdgeInsets.symmetric(horizontal: 0),
+                                    //   child: Row(
+                                    //     children: [
+                                    //       GestureDetector(
+                                    //         onTap: () {
+                                    //           Navigator.push(
+                                    //             context,
+                                    //             MaterialPageRoute(
+                                    //               builder: (context) =>
+                                    //                   const ForgetPassPage(),
+                                    //             ),
+                                    //           );
+                                    //         },
+                                    //         child: const Text(
+                                    //           "Forget Password ?",
+                                    //           style: TextStyle(
+                                    //             color: Colors.blue,
+                                    //             fontWeight: FontWeight.w400,
+                                    //             fontSize: 16,
+                                    //           ),
+                                    //         ),
+                                    //       ),
+                                    //     ],
+                                    //   ),
+                                    // ),
+                                  ],
                                 ),
-                                const Text(
-                                  'Remember me',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 25,
-                                ),
-                                // Padding(
-                                //   padding:
-                                //       const EdgeInsets.symmetric(horizontal: 0),
-                                //   child: Row(
-                                //     children: [
-                                //       GestureDetector(
-                                //         onTap: () {
-                                //           Navigator.push(
-                                //             context,
-                                //             MaterialPageRoute(
-                                //               builder: (context) =>
-                                //                   const ForgetPassPage(),
-                                //             ),
-                                //           );
-                                //         },
-                                //         child: const Text(
-                                //           "Forget Password ?",
-                                //           style: TextStyle(
-                                //             color: Colors.blue,
-                                //             fontWeight: FontWeight.w400,
-                                //             fontSize: 16,
-                                //           ),
-                                //         ),
-                                //       ),
-                                //     ],
-                                //   ),
-                                // ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
+                        )),
                   ),
                 ),
               ],
@@ -251,8 +241,13 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 50),
                     child: GestureDetector(
                       onTap: () async {
-                        await Provider.of<AuthProvider>(context, listen: false)
-                            .login();
+                        await Provider.of<AuthProvider>(context, listen: false).login();
+                        if (authProvider.errorMessage.isEmpty) {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const HomePage()),
+                          );
+                        }
                         if (authProvider.errorMessage.isNotEmpty == true) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -293,7 +288,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '¿No tienes una cuenta?',
+                  '¿No tienes cuenta?',
                   style: GoogleFonts.inter(
                     fontSize: 17,
                     fontWeight: FontWeight.w400,
@@ -306,9 +301,7 @@ class _LoginPageState extends State<LoginPage> {
                   onTap: () async {
                     final result = await Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              RegisterPage(showSignUpPage: () {})),
+                      MaterialPageRoute(builder: (context) => MealsListView()),
                     );
 
                     if (result != null) {

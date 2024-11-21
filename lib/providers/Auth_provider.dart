@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/Apis.dart';
 import '../services/SaveLocalService.dart';
+// import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
@@ -8,10 +10,12 @@ class AuthProvider with ChangeNotifier {
   String _errorMessage = '';
   String _successMessage = '';
   int _userValidate = 0;
+  String _tokenFirebase = '';
   bool _isLoading = false;
   String get errorMessage => _errorMessage;
   String get successMessage => _successMessage;
   int get userValidate => _userValidate;
+  String get tokenFirebase => _tokenFirebase;
   bool get isLoading => _isLoading;
   // login
   String? username;
@@ -40,20 +44,43 @@ class AuthProvider with ChangeNotifier {
       final response = await _apiService.postData('v1/Auth/LoginClient', data);
 
       String token = response['token'];
+      String tokenFirebase = response['tokenFirebase'] ?? "";
       String user = response['user'];
       String idUser = response['idUser'];
+      // String? firebaseToken = "";
 
       if (token != "") {
+        if (tokenFirebase == "") {
+          FirebaseMessaging messaging = FirebaseMessaging.instance;
+          String? firebaseToken = await messaging.getToken();
+          Map<String, dynamic> dataChange = {'id': int.tryParse(idUser), 'tokenFirebase': firebaseToken, "identificador": "Cliente"};
+          final tokenUpdate = await _apiService.postData('v1/Auth/SaveToken', dataChange);
+          int statusCode = tokenUpdate['statusCode'];
+          if (statusCode == 200) {
+            await _saveLocalService.saveData("tokenFirebase", firebaseToken!);
+          }
+        }
+        String? tokenLocal = await _saveLocalService.getData("tokenFirebase");
+
+        if (tokenLocal == null || tokenLocal == "") {
+          FirebaseMessaging messaging = FirebaseMessaging.instance;
+          String? firebaseToken = await messaging.getToken();
+          Map<String, dynamic> dataChange = {'id': int.tryParse(idUser), 'tokenFirebase': firebaseToken, "identificador": "Cliente"};
+          final tokenUpdate = await _apiService.postData('v1/Auth/SaveToken', dataChange);
+          int statusCode = tokenUpdate['statusCode'];
+          if (statusCode == 200) {
+            await _saveLocalService.saveData("tokenFirebase", firebaseToken!);
+          }
+        }
+
         await _saveLocalService.saveData("auth_token", token);
         await _saveLocalService.saveData("user", user);
         await _saveLocalService.saveData("idUser", idUser);
-        await _saveLocalService.saveData("sesion", "true");
         _userValidate = int.tryParse(idUser) ?? 0;
-        _isAuthenticated = true;
+        notifyListeners();
       } else {
         _isAuthenticated = false;
       }
-      notifyListeners();
     } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();
@@ -76,13 +103,11 @@ class AuthProvider with ChangeNotifier {
     };
     notifyListeners(); // Notificar a los widgets que el estado ha cambiado
     try {
-      final response =
-          await _apiService.postData('Clientes/AgregarCliente', data);
+      final response = await _apiService.postData('Clientes/AgregarCliente', data);
       int statusCode = response['statusCode'];
       if (statusCode == 200) {
         print("Success");
-        _successMessage =
-            "Usuario creado correctamente, ya puedes iniciar sesión";
+        _successMessage = "Usuario creado correctamente, ya puedes iniciar sesión";
         notifyListeners();
       }
       notifyListeners();
@@ -100,6 +125,7 @@ class AuthProvider with ChangeNotifier {
     await _saveLocalService.clearData("idUser");
     await _saveLocalService.clearData("idauth_token");
     await _saveLocalService.clearData("user");
+    await _saveLocalService.clearData("tokenFirebase");
     _isAuthenticated = false;
     _userValidate = 0;
     notifyListeners();
@@ -108,5 +134,15 @@ class AuthProvider with ChangeNotifier {
   Future<void> verifySesion() async {
     String? idUser = await _saveLocalService.getData("idUser");
     _userValidate = int.tryParse(idUser!) ?? 0;
+  }
+
+  Future<void> verifyTokenFirebase() async {
+    String? TokenFirebase = await _saveLocalService.getData("tokenFirebase");
+    _tokenFirebase = TokenFirebase!;
+  }
+
+  Future<void> saveTokenFirebase(token) async {
+    await _saveLocalService.saveData("tokenFirebase", token);
+    _tokenFirebase = token!;
   }
 }

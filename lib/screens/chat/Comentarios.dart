@@ -7,15 +7,11 @@ import '../../models/ComentariosModel.dart';
 import '../../providers/Orders_provider.dart';
 
 class ComentariosPage extends StatefulWidget {
-  final List<Comentarios> comentarios;
+  final List<Comentarios?> comentarios;
   final int idOrden;
   final int receverUserId;
 
-  const ComentariosPage(
-      {super.key,
-      required this.comentarios,
-      required this.receverUserId,
-      required this.idOrden});
+  const ComentariosPage({super.key, required this.comentarios, required this.receverUserId, required this.idOrden});
 
   @override
   State<ComentariosPage> createState() => _ComentariosPageState();
@@ -70,36 +66,26 @@ class _ComentariosPageState extends State<ComentariosPage> {
       itemCount: widget.comentarios.length,
       itemBuilder: (context, index) {
         var comentario = widget.comentarios[index];
-        return _buildMessageItem(comentario);
+        return _buildMessageItem(comentario!);
       },
     );
   }
 
   Widget _buildMessageItem(Comentarios data) {
-    var alignment = (data.idUsuario == widget.receverUserId)
-        ? Alignment.centerRight
-        : Alignment.centerLeft;
+    var alignment = (data.idUsuario == widget.receverUserId) ? Alignment.centerRight : Alignment.centerLeft;
 
     return Container(
       alignment: alignment,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          crossAxisAlignment: (data.idUsuario == widget.receverUserId)
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-          mainAxisAlignment: (data.idUsuario == widget.receverUserId)
-              ? MainAxisAlignment.end
-              : MainAxisAlignment.start,
+          crossAxisAlignment: (data.idUsuario == widget.receverUserId) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          mainAxisAlignment: (data.idUsuario == widget.receverUserId) ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
             const SizedBox(
               height: 5,
             ),
-            ChatBubble(
-                message: data.comentario,
-                color: data.idUsuario == widget.receverUserId
-                    ? "send"
-                    : "received"),
+            ChatBubble(message: data.comentario, color: data.idUsuario == widget.receverUserId ? "send" : "received"),
           ],
         ),
       ),
@@ -141,11 +127,11 @@ class _ComentariosPageState extends State<ComentariosPage> {
 
   void sendMessage() async {
     if (_messageController.text.isNotEmpty) {
-      await ordersProvider.saveComent(
-          widget.receverUserId, widget.idOrden, _messageController.text);
+      await ordersProvider.saveComent(widget.receverUserId, widget.idOrden, _messageController.text);
       // Crea un nuevo comentario localmente
       final nuevoComentario = Comentarios(
         idComentario: widget.idOrden,
+        identificador: "Cliente",
         idTrabajo: widget.idOrden,
         idUsuario: widget.receverUserId,
         comentario: _messageController.text,

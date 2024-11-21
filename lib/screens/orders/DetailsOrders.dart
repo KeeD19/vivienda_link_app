@@ -30,6 +30,7 @@ class _OrdersScreenState extends State<DetailsOrderPage> {
     final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    debugPrint('pago ${widget.order.pago}');
     // var height = MediaQuery.of(context).size.height;
     DateTime fecha = DateTime.parse(widget.order.citaFecha);
     String formattedDate = DateFormat('dd/MM/yyyy').format(fecha);
@@ -66,8 +67,7 @@ class _OrdersScreenState extends State<DetailsOrderPage> {
                             color: AppColors.backgroundColor,
                             boxShadow: [
                               BoxShadow(
-                                color:
-                                    AppColors.backgroundColor.withOpacity(1.0),
+                                color: AppColors.backgroundColor.withOpacity(1.0),
                                 blurRadius: 15,
                                 offset: const Offset(0, 5),
                               ),
@@ -79,8 +79,7 @@ class _OrdersScreenState extends State<DetailsOrderPage> {
                             image: widget.order.archivo != null
                                 ? DecorationImage(
                                     image: MemoryImage(
-                                      base64Decode(widget.order
-                                          .archivo), // convierte la base64 a bytes
+                                      base64Decode(widget.order.archivo), // convierte la base64 a bytes
                                     ),
                                     fit: BoxFit.cover,
                                   )
@@ -88,305 +87,271 @@ class _OrdersScreenState extends State<DetailsOrderPage> {
                                     image: AssetImage('assets/images/logo.png'),
                                     fit: BoxFit.cover,
                                   )),
-                        // automaticallyImplyLeading: false,
                       ),
                       SizedBox(height: screenHeight * 0.02),
-                      SizedBox(height: screenHeight * 0.01),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0), // Espacio lateral
-                        child: RichText(
-                          textAlign: TextAlign.left,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "Orden",
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.8),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.0,
+                      SizedBox(
+                        height: screenHeight * 0.45,
+                        child: SingleChildScrollView(
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0), // Espacio lateral
+                              child: RichText(
+                                textAlign: TextAlign.left,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: "Orden",
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.8),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '  ${widget.order.orden}',
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.5),
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              TextSpan(
-                                text: '  ${widget.order.orden}',
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.5),
-                                  fontSize: 18.0,
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0), // Espacio lateral
+                              child: RichText(
+                                textAlign: TextAlign.left,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: "Tipo de Servicio",
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.8),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '  ${widget.order.tipoServicio}',
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.5),
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0), // Espacio lateral
+                              child: RichText(
+                                textAlign: TextAlign.left,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: "Dirección:",
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.8),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '  ${widget.order.direccion}',
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.5),
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0), // Espacio lateral
+                              child: RichText(
+                                textAlign: TextAlign.left,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: "Fecha:",
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.8),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '  $formattedDate',
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.5),
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0), // Espacio lateral
+                              child: RichText(
+                                textAlign: TextAlign.left,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: "Recomendación:",
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.8),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '  ${widget.order.recomendacion}',
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.5),
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0), // Espacio lateral
+                              child: RichText(
+                                textAlign: TextAlign.left,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: "Descripción:",
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.8),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '  ${widget.order.descripcionSolicitud}',
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.5),
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0), // Espacio lateral
+                              child: RichText(
+                                textAlign: TextAlign.left,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: "Proveedor:",
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.8),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '  ${widget.order.proveedor}',
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.5),
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: screenHeight * 0.02),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ComentariosPage(
+                                          comentarios: widget.order.comentarios,
+                                          receverUserId: widget.order.idCliente,
+                                          idOrden: widget.order.idOrdenTrabajo,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [Image.asset('assets/icons/chat.png', color: AppColors.bluePrimaryColor, height: 34.0)]),
+                                ),
+                                GestureDetector(
+                                  onTap: () async {
+                                    // aqui iria la llamada a la pantalla emergente
+                                    final scaffoldContext = context;
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return QualificationEmergent(
+                                          onSubmitted: (rating, comment) async {
+                                            await ordersProvider.saveResenia(widget.order.idProveedor, rating, comment);
+                                            if (ordersProvider.errorMessage.isEmpty == true) {
+                                              // ignore: use_build_context_synchronously
+                                              showCustomSnackBar(scaffoldContext, ordersProvider.successMessage, isError: false);
+                                            } else {
+                                              // ignore: use_build_context_synchronously
+                                              showCustomSnackBar(scaffoldContext, ordersProvider.errorMessage, isError: true);
+                                            }
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [Image.asset('assets/icons/calificacion.png', color: AppColors.bluePrimaryColor, height: 34.0)]),
+                                ),
+                                GestureDetector(
+                                  onTap: () async {
+                                    final scaffoldContext = context;
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return ReportEmergent(
+                                          onSubmitted: (motivoReporte) async {
+                                            // Aquí puedes manejar la calificación y comentario enviados.
+                                            // print('Comentario: $motivoReporte');
+                                            await ordersProvider.saveReporte(widget.order.idProveedor, motivoReporte);
+                                            if (ordersProvider.errorMessage.isEmpty == true) {
+                                              // ignore: use_build_context_synchronously
+                                              showCustomSnackBar(scaffoldContext, ordersProvider.successMessage, isError: false);
+                                            } else {
+                                              // ignore: use_build_context_synchronously
+                                              showCustomSnackBar(scaffoldContext, ordersProvider.errorMessage, isError: true);
+                                            }
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                                    Image.asset('assets/icons/report.png',
+                                        // color: AppColors.bluePrimaryColor,
+                                        height: 34.0)
+                                  ]),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: screenHeight * 0.02)
+                          ]),
                         ),
                       ),
-                      SizedBox(height: screenHeight * 0.01),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0), // Espacio lateral
-                        child: RichText(
-                          textAlign: TextAlign.left,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "Tipo de Servicio",
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.8),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                              TextSpan(
-                                text: '  ${widget.order.tipoServicio}',
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.5),
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0), // Espacio lateral
-                        child: RichText(
-                          textAlign: TextAlign.left,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "Dirección:",
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.8),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                              TextSpan(
-                                text: '  ${widget.order.direccion}',
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.5),
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0), // Espacio lateral
-                        child: RichText(
-                          textAlign: TextAlign.left,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "Fecha:",
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.8),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                              TextSpan(
-                                text: '  $formattedDate',
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.5),
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0), // Espacio lateral
-                        child: RichText(
-                          textAlign: TextAlign.left,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "Recomendación:",
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.8),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                              TextSpan(
-                                text: '  ${widget.order.recomendacion}',
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.5),
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0), // Espacio lateral
-                        child: RichText(
-                          textAlign: TextAlign.left,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "Descripción:",
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.8),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                              TextSpan(
-                                text: '  ${widget.order.descripcionSolicitud}',
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.5),
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0), // Espacio lateral
-                        child: RichText(
-                          textAlign: TextAlign.left,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "Proveedor:",
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.8),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                              TextSpan(
-                                text: '  ${widget.order.proveedor}',
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.5),
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.050),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ComentariosPage(
-                                    comentarios: widget.order.comentarios,
-                                    receverUserId: widget.order.idCliente,
-                                    idOrden: widget.order.idOrdenTrabajo,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Image.asset('assets/icons/chat.png',
-                                      color: AppColors.bluePrimaryColor,
-                                      height: 34.0)
-                                ]),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              // aqui iria la llamada a la pantalla emergente
-                              final scaffoldContext = context;
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return QualificationEmergent(
-                                    onSubmitted: (rating, comment) async {
-                                      await ordersProvider.saveResenia(
-                                          widget.order.idProveedor,
-                                          rating,
-                                          comment);
-                                      if (ordersProvider.errorMessage.isEmpty ==
-                                          true) {
-                                        // ignore: use_build_context_synchronously
-                                        showCustomSnackBar(scaffoldContext,
-                                            ordersProvider.successMessage,
-                                            isError: false);
-                                      } else {
-                                        // ignore: use_build_context_synchronously
-                                        showCustomSnackBar(scaffoldContext,
-                                            ordersProvider.errorMessage,
-                                            isError: true);
-                                      }
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Image.asset('assets/icons/calificacion.png',
-                                      color: AppColors.bluePrimaryColor,
-                                      height: 34.0)
-                                ]),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              final scaffoldContext = context;
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return ReportEmergent(
-                                    onSubmitted: (motivoReporte) async {
-                                      // Aquí puedes manejar la calificación y comentario enviados.
-                                      // print('Comentario: $motivoReporte');
-                                      await ordersProvider.saveReporte(
-                                          widget.order.idProveedor,
-                                          motivoReporte);
-                                      if (ordersProvider.errorMessage.isEmpty ==
-                                          true) {
-                                        // ignore: use_build_context_synchronously
-                                        showCustomSnackBar(scaffoldContext,
-                                            ordersProvider.successMessage,
-                                            isError: false);
-                                      } else {
-                                        // ignore: use_build_context_synchronously
-                                        showCustomSnackBar(scaffoldContext,
-                                            ordersProvider.errorMessage,
-                                            isError: true);
-                                      }
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Image.asset('assets/icons/report.png',
-                                      // color: AppColors.bluePrimaryColor,
-                                      height: 34.0)
-                                ]),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: screenHeight * 0.02)
                     ],
                   ),
                 ),
@@ -399,18 +364,18 @@ class _OrdersScreenState extends State<DetailsOrderPage> {
                       Align(
                         alignment: Alignment.bottomLeft,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20.0, vertical: 15.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
                           decoration: BoxDecoration(
                             color: widget.order.estado == "Completada"
                                 ? AppColors.backgroundColor
-                                : widget.order.estado == "Aceptada"
-                                    ? AppColors.successColor
-                                    : AppColors.errorColor,
+                                : widget.order.estado == "Pendiente"
+                                    ? AppColors.bluePrimaryColor
+                                    : widget.order.estado == "En Progreso"
+                                        ? AppColors.bluePrimaryColor
+                                        : AppColors.errorColor,
                             boxShadow: [
                               BoxShadow(
-                                color:
-                                    AppColors.backgroundColor.withOpacity(0.3),
+                                color: AppColors.backgroundColor.withOpacity(0.3),
                                 blurRadius: 15,
                                 offset: const Offset(0, -5),
                               ),
@@ -431,18 +396,16 @@ class _OrdersScreenState extends State<DetailsOrderPage> {
                           ),
                         ),
                       ),
-                      widget.order.monto != 0
+                      widget.order.pago != null
                           ? Align(
                               alignment: Alignment.bottomRight,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20.0, vertical: 15.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
                                 decoration: BoxDecoration(
                                   color: AppColors.backgroundColor,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.backgroundColor
-                                          .withOpacity(0.3),
+                                      color: AppColors.backgroundColor.withOpacity(0.3),
                                       blurRadius: 15,
                                       offset: const Offset(0, -5),
                                     ),
@@ -452,9 +415,8 @@ class _OrdersScreenState extends State<DetailsOrderPage> {
                                   ),
                                 ),
                                 child: Text(
-                                  widget.order.estadoPago == 0
-                                      ? 'Pay \$${widget.order.monto.toStringAsFixed(0)}'
-                                      : 'Payed \$${widget.order.monto.toStringAsFixed(0)}',
+                                  'Payed \$${widget.order.pago['monto']?.toStringAsFixed(2)}',
+                                  // 'Payed \$${100}',
                                   style: TextStyle(
                                     color: Colors.white.withOpacity(0.9),
                                     fontSize: 18.0,

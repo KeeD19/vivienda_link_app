@@ -3,7 +3,7 @@
 abstract class LocaleKeys {
   static const skip = 'skip';
   static const get_started = 'Registrarme';
-  static const boarding1_title = 'VIVIENDA LINK';
+  static const boarding1_title = 'EXCLUSIFY';
   static const boarding2_title = 'Planes';
   static const boarding1_description =
       'Conoce la manera más fácil de pedir un trabajo en línea de manera rápida y segura.';

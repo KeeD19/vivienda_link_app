@@ -7,22 +7,23 @@ class Order {
   final int idOrdenTrabajo;
   final String orden;
   final int idServicio;
-  final String tipoServicio;
-  final String direccion;
+  final String? tipoServicio;
+  final String? direccion;
   final citaFecha;
   final String recomendacion;
   final String descripcionSolicitud;
   final String estado;
   final int idProveedor;
   final int idCliente;
-  final int fase;
-  final int aprobacion;
+  final int? fase;
+  final int? fasePago;
   final archivo;
   final String? extencionArchivo;
-  final String proveedor;
-  final double monto;
-  final int estadoPago;
+  final String? proveedor;
+  // final double? monto;
+  // final int? estadoPago;
   final List<Comentarios> comentarios;
+  final pago;
 
   Order(
       {required this.idOrdenTrabajo,
@@ -37,13 +38,14 @@ class Order {
       required this.idProveedor,
       required this.idCliente,
       required this.fase,
-      required this.aprobacion,
+      required this.fasePago,
       required this.archivo,
       required this.extencionArchivo,
       required this.proveedor,
-      required this.monto,
-      required this.estadoPago,
-      required this.comentarios});
+      // required this.monto,
+      // required this.estadoPago,
+      required this.comentarios,
+      required this.pago});
 
   @override
   String toString() {
@@ -52,27 +54,25 @@ class Order {
 
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
-      idOrdenTrabajo: json['idOrdenTrabajo'],
-      orden: json['orden'],
-      idServicio: json['idServicio'],
-      tipoServicio: json['tipoServicio'],
-      direccion: json['direccion'],
-      citaFecha: json['citaFecha'],
-      recomendacion: json['recomendacion'],
-      descripcionSolicitud: json['descripcionSolicitud'],
-      estado: json['estado'],
-      idProveedor: json['idProveedor'],
-      idCliente: json['idCliente'],
-      fase: json['fase'],
-      aprobacion: json['aprobacion'],
-      archivo: json['archivo'],
-      extencionArchivo: json['extencionArchivo'],
-      proveedor: json['proveedor'],
-      monto: json['monto'],
-      estadoPago: json['estadoPago'],
-      comentarios: (json['comentarios'] as List<dynamic>)
-          .map((item) => Comentarios.fromJson(item))
-          .toList(),
-    );
+        idOrdenTrabajo: json['idOrdenTrabajo'],
+        orden: json['orden'],
+        idServicio: json['idServicio'],
+        tipoServicio: json['tipoServicio'],
+        direccion: json['direccion'],
+        citaFecha: json['citaFecha'],
+        recomendacion: json['recomendacion'],
+        descripcionSolicitud: json['descripcionSolicitud'],
+        estado: json['estado'],
+        idProveedor: json['idProveedor'],
+        idCliente: json['idCliente'],
+        fase: json['fase'],
+        fasePago: json['fasePago'],
+        archivo: json['archivo'] != null ? json['archivo'] : null,
+        extencionArchivo: json['extencionArchivo'],
+        proveedor: json['proveedor'],
+        // monto: json['monto'],
+        // estadgo: json['estadoPago'],
+        comentarios: json['comentarios'] != null ? (json['comentarios'] as List<dynamic>).map((item) => Comentarios.fromJson(item)).toList() : [],
+        pago: json['pago'] != null ? json['pago'] : null);
   }
 }
