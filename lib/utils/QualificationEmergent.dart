@@ -30,50 +30,50 @@ class _QualificationEmergentState extends State<QualificationEmergent> {
         'Califica al proveedor',
         style: TextStyle(color: AppColors.backgroundColor),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Selecciona una calificación:',
-            style: TextStyle(
-                color:
-                    _error ? AppColors.errorColor : AppColors.backgroundColor),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(5, (index) {
-              return IconButton(
-                icon: Icon(
-                  index < selectedRating ? Icons.star : Icons.star_border,
-                  color: Colors.yellow[700],
-                ),
-                onPressed: () {
-                  setState(() {
-                    selectedRating = index + 1;
-                    _error = false;
-                  });
-                },
-              );
-            }),
-          ),
-          Form(
-            key: _formKey,
-            child: TextFormField(
-              controller: commentController,
-              maxLines: 5,
-              decoration: InputDecoration(
-                labelText: _errorField == "" ? 'Comentario' : _errorField,
-                border: const OutlineInputBorder(),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return _errorField;
-                }
-                return null;
-              },
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Selecciona una calificación:',
+              style: TextStyle(color: _error ? AppColors.errorColor : AppColors.backgroundColor),
             ),
-          ),
-        ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (index) {
+                return IconButton(
+                  icon: Icon(
+                    index < selectedRating ? Icons.star : Icons.star_border,
+                    color: Colors.yellow[700],
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      selectedRating = index + 1;
+                      _error = false;
+                    });
+                  },
+                );
+              }),
+            ),
+            Form(
+              key: _formKey,
+              child: TextFormField(
+                controller: commentController,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  labelText: _errorField == "" ? 'Comentario' : _errorField,
+                  border: const OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return _errorField;
+                  }
+                  return null;
+                },
+              ),
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "703128427460",
+    "project_id": "exclusify-ad40e",
+    "storage_bucket": "exclusify-ad40e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:703128427460:android:0c63a6593fa3c336e1e291",
+        "android_client_info": {
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtuWGM82WZ_MYHQ_9-twFrdhep2xfCMfg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,6 +1,11 @@
 {
   "configurations": [
     {
+      "name": "Flutter: Attach to Device",
+      "type": "dart",
+      "request": "attach"
+    },
+    {
       "type": "pwa-msedge",
       "name": "Launch Microsoft Edge",
       "request": "launch",

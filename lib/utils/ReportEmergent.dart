@@ -28,27 +28,29 @@ class _ReportEmergentState extends State<ReportEmergent> {
         'Reporta al proveedor',
         style: TextStyle(color: AppColors.backgroundColor),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Form(
-            key: _formKey,
-            child: TextFormField(
-              controller: motivoController,
-              maxLines: 10,
-              decoration: InputDecoration(
-                labelText: _errorField == "" ? 'Reporte' : _errorField,
-                border: const OutlineInputBorder(),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Form(
+              key: _formKey,
+              child: TextFormField(
+                controller: motivoController,
+                maxLines: 10,
+                decoration: InputDecoration(
+                  labelText: _errorField == "" ? 'Reporte' : _errorField,
+                  border: const OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return _errorField;
+                  }
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return _errorField;
-                }
-                return null;
-              },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       actions: [
         TextButton(
