@@ -802,7 +802,8 @@ class OrdersProvider with ChangeNotifier {
           _errorMessage = 'Error: al mapear los datos';
         }
       } else {
-        _errorMessage = 'Error: ${response.statusCode}';
+        Map<String, dynamic> errorResponse = json.decode(response.body);
+        throw Exception(errorResponse['message']);
       }
     } catch (e) {
       _errorMessage = e.toString();

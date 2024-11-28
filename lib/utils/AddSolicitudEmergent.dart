@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vivienda_link_app/models/FilterOptionsModel.dart';
+import 'package:vivienda_link_app/screens/home/Home.dart';
 import 'package:vivienda_link_app/utils/Colors_Utils.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
@@ -89,14 +90,6 @@ class _AddSolicitudEmergentState extends State<AddSolicitudEmergent> {
                 squareInfo(icon: Icons.monetization_on, title: "Proveedor:", desc: widget.options.nombreProvedor, type: "Selfie", selfie: widget.options.selfie),
                 const SizedBox(height: 10),
                 squareInfo(icon: Icons.location_on_rounded, title: "Lugar del servicio:", desc: _Lugar(widget.options.cobertura['pais'], widget.options.cobertura['estado'], widget.options.cobertura['municipio']), type: "Icon", selfie: ""),
-                rechazado != ""
-                    ? Text(
-                        rechazado,
-                        style: const TextStyle(
-                          color: AppColors.errorColor,
-                        ),
-                      )
-                    : const Center(),
                 const SizedBox(height: 20),
                 ordersProvider.isLoading
                     ? const Center(
@@ -118,7 +111,7 @@ class _AddSolicitudEmergentState extends State<AddSolicitudEmergent> {
                                 showCustomSnackBar(context, ordersProvider.errorMessage, isError: true);
                               }
                             } else {
-                              Navigator.pop(context);
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
                             }
                           },
                           style: ElevatedButton.styleFrom(

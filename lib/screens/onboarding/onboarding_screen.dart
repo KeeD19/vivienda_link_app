@@ -116,36 +116,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // Row(
-                //   children: [
-                //     GradientButton(
-                //       text: LocaleKeys.get_started.tr(),
-                //       gradientColors: const [AppColors.bluePrimaryColor, AppColors.blueSecondColor],
-                //       onPressed: () {
-                //         Navigator.push(
-                //           context,
-                //           MaterialPageRoute(builder: (context) => RegisterPage(showSignUpPage: () {})),
-                //         );
-                //       },
-                //       width: 150,
-                //     ),
-                //     const Spacer(),
-                //     GradientButton(
-                //       text: LocaleKeys.skip.tr(),
-                //       gradientColors: const [AppColors.white, AppColors.white],
-                //       textColor: AppColors.text,
-                //       width: 120,
-                //       onPressed: () {
-                //         controller.animateToPage(
-                //           1,
-                //           duration: const Duration(milliseconds: 300),
-                //           curve: Curves.easeInOut,
-                //         );
-                //       },
-                //     ),
-                //   ],
-                // ),
-                // const SizedBox(height: 10),
               ],
             ),
           ),
