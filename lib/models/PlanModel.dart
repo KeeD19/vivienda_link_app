@@ -1,23 +1,23 @@
 class PlanModel {
-  final int idPlan;
-  final String name;
-  final String clientType;
-  final double amount;
-  final String frequencyPlan;
+  final int idPlanes;
+  final String nombrePlan;
+  final String descripcion;
+  final double monto;
+  final int tipoPlan;
+  final String beneficios;
+  final String tipoCliente;
 
-  PlanModel(
-      {required this.idPlan,
-      required this.name,
-      required this.clientType,
-      required this.amount,
-      required this.frequencyPlan});
+  PlanModel({required this.idPlanes, required this.nombrePlan, required this.descripcion, required this.monto, required this.tipoPlan, required this.beneficios, required this.tipoCliente});
 
   factory PlanModel.fromJson(Map<String, dynamic> json) {
     return PlanModel(
-        idPlan: json['idPlan'],
-        name: json['name'],
-        clientType: json['clientType'],
-        amount: json['amount'],
-        frequencyPlan: json['frequencyPlan']);
+      idPlanes: json['idPlanes'],
+      nombrePlan: json['nombrePlan'],
+      descripcion: json['descripcion'],
+      monto: json['monto'],
+      tipoPlan: json['tipoPlan'],
+      beneficios: json['beneficios'],
+      tipoCliente: json['tipoCliente'],
+    );
   }
 }

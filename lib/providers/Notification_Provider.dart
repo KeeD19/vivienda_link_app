@@ -18,7 +18,7 @@ class NotificationProvider with ChangeNotifier {
   List<NotificacionesModel> _notificaciones = [];
   List get dataNotificaciones => _notificaciones;
 
-  Future<void> getNotificaciones() async {
+  Future<void> getNotificaciones(String identificador) async {
     String? idUser = await _saveLocalService.getData("idUser");
     int idUser0 = int.tryParse(idUser!) ?? 0;
     _errorMessage = '';
@@ -26,7 +26,7 @@ class NotificationProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      final response = await _apiService.getData('Notificaciones/ObtenerNotificaciones?idUsuario=$idUser0&identificador=Cliente');
+      final response = await _apiService.getData('Notificaciones/ObtenerNotificaciones?idUsuario=$idUser0&identificador=$identificador');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = jsonDecode(response.body);

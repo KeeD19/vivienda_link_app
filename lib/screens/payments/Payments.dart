@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/PagosModel.dart';
 import '../../providers/Orders_provider.dart';
+import '../../utils/Colors_Utils.dart';
 import '../../utils/SpinnerLoader.dart';
 // import 'package:provider/provider.dart';
 // import '../../providers/Auth_provider.dart';
@@ -22,11 +24,27 @@ class _PaymentsPageState extends State<PaymentsPage> {
     ordersProvider.getPayments();
   }
 
+  String capitalizarPrimeraLetra(String texto) {
+    if (texto.isEmpty) {
+      return texto;
+    }
+    return texto[0].toUpperCase() + texto.substring(1);
+  }
+
+  String capitalizarFecha(DateTime date) {
+    final dia = DateFormat('dd', 'es_ES').format(date);
+    final mes = DateFormat('MMMM', 'es_ES').format(date);
+    final diaAnio = '$dia de ${capitalizarPrimeraLetra(mes)}';
+
+    return diaAnio;
+  }
+
   Map<String, List<PagosModel>> agruparPagosPorMes(List<PagosModel> pagos) {
     Map<String, List<PagosModel>> pagosAgrupados = {};
 
     for (var pago in pagos) {
-      final mesAnio = "${pago.datePago.month.toString().padLeft(2, '0')}/${pago.datePago.year}";
+      final mesAnio = DateFormat('MMMM yyyy', 'es_ES').format(pago.datePago);
+
       if (pagosAgrupados.containsKey(mesAnio)) {
         pagosAgrupados[mesAnio]?.add(pago);
       } else {
@@ -42,9 +60,10 @@ class _PaymentsPageState extends State<PaymentsPage> {
     final ordersProvider = Provider.of<OrdersProvider>(context);
     final pagosAgrupados = agruparPagosPorMes(ordersProvider.pagosData);
     return Scaffold(
+      backgroundColor: AppColors.backgroundSecondColor,
       body: ordersProvider.isLoading
           ? const Center(child: Spinner())
-          : ordersProvider.pagosData.length > 0
+          : ordersProvider.pagosData.isNotEmpty
               ? ListView.builder(
                   itemCount: pagosAgrupados.length,
                   itemBuilder: (context, index) {
@@ -57,8 +76,12 @@ class _PaymentsPageState extends State<PaymentsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            mesAnio,
-                            style: Theme.of(context).textTheme.titleLarge,
+                            capitalizarPrimeraLetra(mesAnio),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.activeBlack,
+                            ),
                           ),
                           const SizedBox(height: 10),
                           ListView.builder(
@@ -68,21 +91,50 @@ class _PaymentsPageState extends State<PaymentsPage> {
                             itemBuilder: (context, pagoIndex) {
                               final pago = pagosDelMes[pagoIndex];
                               return Card(
-                                margin: const EdgeInsets.symmetric(vertical: 5),
+                                margin: const EdgeInsets.symmetric(vertical: 7),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(AppColors.border),
+                                ),
+                                color: AppColors.white,
                                 elevation: 2,
                                 child: ListTile(
                                   leading: CircleAvatar(
-                                    backgroundColor: Colors.blue,
-                                    child: Text(
-                                      pago.datePago.day.toString(),
-                                      style: const TextStyle(color: Colors.white),
+                                    radius: 30,
+                                    backgroundColor: AppColors.skyBlue,
+                                    child: Icon(
+                                      Icons.monetization_on,
+                                      color: AppColors.lightText,
+                                      size: 30,
                                     ),
                                   ),
-                                  title: Text('Orden: ${pago.orden}'),
-                                  subtitle: Text("Monto: \$${pago.monto.toStringAsFixed(2)} ${pago.currency}"),
-                                  trailing: Text(
-                                    "${pago.datePago.hour}:${pago.datePago.minute.toString().padLeft(2, '0')}",
-                                    style: TextStyle(color: Colors.grey.shade600),
+                                  // title: Text('Orden: ${pago.orden}'),
+                                  title: Text(
+                                    '${capitalizarFecha(pago.datePago)} ${pago.datePago.hour}:${pago.datePago.minute.toString().padLeft(2, '0')}',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.grey,
+                                    ),
+                                  ),
+                                  // subtitle: Text("Monto: \$${pago.monto.toStringAsFixed(2)} ${pago.currency}"),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Orden: ${pago.orden}',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: AppColors.activeBlack,
+                                        ),
+                                      ),
+                                      Text(
+                                        "Monto: \$${pago.monto.toStringAsFixed(2)} ${pago.currency}",
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: AppColors.activeBlack,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               );

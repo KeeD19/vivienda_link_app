@@ -10,6 +10,7 @@ import '../../utils/Colors_Utils.dart';
 import '../../utils/PaymentDialog.dart';
 import '../../utils/ScaffoldMessengerUtil.dart';
 import '../../utils/SpinnerLoader.dart';
+import '../../utils/SquareInfo.dart';
 
 class AddOrderPage extends StatefulWidget {
   final FilterOptionsModel options;
@@ -39,16 +40,17 @@ class _AddOrdersState extends State<AddOrderPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
+        backgroundColor: AppColors.backgroundSecondColor,
         appBar: AppBar(
           title: const Text(
             'Agregar Orden',
             style: TextStyle(
-              color: AppColors.blueSecondColor,
+              color: AppColors.white,
             ),
           ),
           backgroundColor: AppColors.backgroundColor,
           iconTheme: const IconThemeData(
-            color: AppColors.blueSecondColor,
+            color: AppColors.white,
           ),
         ),
         body: SizedBox(
@@ -60,7 +62,13 @@ class _AddOrdersState extends State<AddOrderPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Card(
-                    margin: const EdgeInsets.all(15),
+                    margin: const EdgeInsets.all(10),
+                    shape: const RoundedRectangleBorder(
+                      side: BorderSide.none,
+                      borderRadius: BorderRadius.zero, // Opcional: Bordes redondeados
+                    ),
+                    color: AppColors.backgroundSecondColor,
+                    elevation: 0,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -68,72 +76,26 @@ class _AddOrdersState extends State<AddOrderPage> {
                         Form(
                             key: _formKey,
                             child: Padding(
-                              padding: const EdgeInsets.all(15),
+                              padding: const EdgeInsets.all(0),
                               child: Column(children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                                  child: RichText(
-                                    textAlign: TextAlign.left,
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: "Tipo de servicio:",
-                                          style: TextStyle(
-                                            color: Colors.black.withOpacity(0.8),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18.0,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: '  ${widget.options.nombreServicio}',
-                                          style: TextStyle(
-                                            color: Colors.black.withOpacity(0.5),
-                                            fontSize: 18.0,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: screenHeight * 0.02),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                                  child: RichText(
-                                    textAlign: TextAlign.left,
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: "Proveedor:",
-                                          style: TextStyle(
-                                            color: Colors.black.withOpacity(0.8),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18.0,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: '  ${widget.options.nombreProvedor}',
-                                          style: TextStyle(
-                                            color: Colors.black.withOpacity(0.5),
-                                            fontSize: 18.0,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: screenHeight * 0.02),
+                                squareInfo(icon: Icons.app_settings_alt_outlined, title: "Servicio:", desc: widget.options.nombreServicio, type: "Icon", selfie: ""),
+                                SizedBox(height: screenHeight * 0.01),
+                                squareInfo(icon: Icons.monetization_on, title: "Proveedor:", desc: widget.options.nombreProvedor, type: "Selfie", selfie: widget.options.selfie),
+                                SizedBox(height: screenHeight * 0.01),
                                 SizedBox(
                                     child: TextFormField(
                                   controller: ordenController,
                                   cursorColor: Colors.black,
                                   decoration: InputDecoration(
-                                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.grey, width: 0.8)),
-                                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.bluePrimaryColor, width: 0.8)),
+                                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppColors.border), borderSide: const BorderSide(color: Colors.grey, width: 0.8)),
+                                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppColors.border), borderSide: const BorderSide(color: AppColors.bluePrimaryColor, width: 0.8)),
                                       errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(AppColors.border),
                                         borderSide: const BorderSide(color: Colors.red, width: 0.8),
                                       ),
                                       labelText: 'Nombre de la orden',
+                                      filled: true,
+                                      fillColor: AppColors.white,
                                       labelStyle: TextStyle(color: Theme.of(context).colorScheme.secondary)),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
@@ -148,12 +110,14 @@ class _AddOrdersState extends State<AddOrderPage> {
                                   controller: direccionController,
                                   cursorColor: Colors.black,
                                   decoration: InputDecoration(
-                                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.grey, width: 0.8)),
-                                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.bluePrimaryColor, width: 0.8)),
+                                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppColors.border), borderSide: const BorderSide(color: Colors.grey, width: 0.8)),
+                                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppColors.border), borderSide: const BorderSide(color: AppColors.bluePrimaryColor, width: 0.8)),
                                     labelText: 'Dirección',
+                                    filled: true,
+                                    fillColor: AppColors.white,
                                     labelStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
                                     errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(AppColors.border),
                                       borderSide: const BorderSide(color: Colors.red, width: 0.8),
                                     ),
                                   ),
@@ -171,7 +135,9 @@ class _AddOrdersState extends State<AddOrderPage> {
                                   readOnly: true,
                                   decoration: InputDecoration(
                                     labelText: 'Fecha del trabajo',
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    filled: true,
+                                    fillColor: AppColors.white,
+                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppColors.border)),
                                     suffixIcon: const Icon(Icons.calendar_today),
                                   ),
                                   onTap: () async {
@@ -206,12 +172,14 @@ class _AddOrdersState extends State<AddOrderPage> {
                                   maxLines: 2,
                                   cursorColor: Colors.black,
                                   decoration: InputDecoration(
-                                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.grey, width: 0.8)),
-                                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.bluePrimaryColor, width: 0.8)),
+                                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppColors.border), borderSide: const BorderSide(color: Colors.grey, width: 0.8)),
+                                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppColors.border), borderSide: const BorderSide(color: AppColors.bluePrimaryColor, width: 0.8)),
                                       labelText: 'Recomendación',
+                                      filled: true,
+                                      fillColor: AppColors.white,
                                       labelStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
                                       errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(AppColors.border),
                                         borderSide: const BorderSide(color: Colors.red, width: 0.8),
                                       )),
                                   validator: (value) {
@@ -228,12 +196,14 @@ class _AddOrdersState extends State<AddOrderPage> {
                                   maxLines: 3,
                                   cursorColor: Colors.black,
                                   decoration: InputDecoration(
-                                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.grey, width: 0.8)),
-                                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.bluePrimaryColor, width: 0.8)),
+                                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppColors.border), borderSide: const BorderSide(color: Colors.grey, width: 0.8)),
+                                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppColors.border), borderSide: const BorderSide(color: AppColors.bluePrimaryColor, width: 0.8)),
                                       labelText: 'Descripción',
+                                      filled: true,
+                                      fillColor: AppColors.white,
                                       labelStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
                                       errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(AppColors.border),
                                         borderSide: const BorderSide(color: Colors.red, width: 0.8),
                                       )),
                                   validator: (value) {
@@ -272,10 +242,10 @@ class _AddOrdersState extends State<AddOrderPage> {
                                             }
                                           },
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: AppColors.backgroundColor,
+                                            backgroundColor: AppColors.orangeColor,
                                             padding: const EdgeInsets.symmetric(vertical: 15.0),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(30.0),
+                                              borderRadius: BorderRadius.circular(AppColors.border),
                                             ),
                                           ),
                                           child: const Text(

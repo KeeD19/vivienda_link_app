@@ -10,6 +10,8 @@ class AuthProvider with ChangeNotifier {
   String _errorMessage = '';
   String _successMessage = '';
   int _userValidate = 0;
+  int _typeUser = 0;
+  int get typeUser => _typeUser;
   String _tokenFirebase = '';
   bool _isLoading = false;
   String get errorMessage => _errorMessage;
@@ -47,7 +49,8 @@ class AuthProvider with ChangeNotifier {
       String tokenFirebase = response['tokenFirebase'] ?? "";
       String user = response['user'];
       String idUser = response['idUser'];
-      // String? firebaseToken = "";
+      String tipo = response['tipo'];
+      // _typeUser = int.tryParse(idUser)!;
 
       if (token != "") {
         if (tokenFirebase == "") {
@@ -76,6 +79,7 @@ class AuthProvider with ChangeNotifier {
         await _saveLocalService.saveData("auth_token", token);
         await _saveLocalService.saveData("user", user);
         await _saveLocalService.saveData("idUser", idUser);
+        await _saveLocalService.saveData("tipoUser", tipo);
         _userValidate = int.tryParse(idUser) ?? 0;
         notifyListeners();
       } else {
@@ -123,17 +127,33 @@ class AuthProvider with ChangeNotifier {
   // cerrar sesion
   void logout() async {
     await _saveLocalService.clearData("idUser");
-    await _saveLocalService.clearData("idauth_token");
+    await _saveLocalService.clearData("auth_token");
     await _saveLocalService.clearData("user");
     await _saveLocalService.clearData("tokenFirebase");
+    await _saveLocalService.clearData("tipoUser");
+
     _isAuthenticated = false;
     _userValidate = 0;
+    _successMessage = "Cerrado";
+
     notifyListeners();
   }
 
   Future<void> verifySesion() async {
     String? idUser = await _saveLocalService.getData("idUser");
     _userValidate = int.tryParse(idUser!) ?? 0;
+    notifyListeners();
+  }
+
+  Future<void> getTypeUser() async {
+    _isLoading = true;
+    notifyListeners();
+    String? tipoUser = await _saveLocalService.getData("tipoUser");
+    String? idUser = await _saveLocalService.getData("idUser");
+    debugPrint('idUser: $idUser');
+    _typeUser = int.tryParse(tipoUser!) ?? 0;
+    _isLoading = false;
+    notifyListeners();
   }
 
   Future<void> verifyTokenFirebase() async {

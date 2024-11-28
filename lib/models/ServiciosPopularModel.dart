@@ -4,7 +4,7 @@ import 'package:vivienda_link_app/models/ServiciosModel.dart';
 class ServiciosPopularModel {
   final int idProveedor;
   final String nombreProvedor;
-  final selfie;
+  final dynamic selfie;
   final int minHoras;
   final double estrellas;
   final List<ServiciosModel> servicios;

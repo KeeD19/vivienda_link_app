@@ -10,8 +10,9 @@ class ComentariosPage extends StatefulWidget {
   final List<Comentarios?> comentarios;
   final int idOrden;
   final int receverUserId;
+  final String identificador;
 
-  const ComentariosPage({super.key, required this.comentarios, required this.receverUserId, required this.idOrden});
+  const ComentariosPage({super.key, required this.comentarios, required this.receverUserId, required this.idOrden, required this.identificador});
 
   @override
   State<ComentariosPage> createState() => _ComentariosPageState();
@@ -35,12 +36,12 @@ class _ComentariosPageState extends State<ComentariosPage> {
           title: const Text(
             "Comentarios",
             style: TextStyle(
-              color: AppColors.blueSecondColor,
+              color: AppColors.white,
             ),
           ),
           backgroundColor: AppColors.backgroundColor,
           iconTheme: const IconThemeData(
-            color: AppColors.blueSecondColor,
+            color: AppColors.white,
           )),
       body: Column(
         children: [
@@ -72,20 +73,20 @@ class _ComentariosPageState extends State<ComentariosPage> {
   }
 
   Widget _buildMessageItem(Comentarios data) {
-    var alignment = (data.idUsuario == widget.receverUserId) ? Alignment.centerRight : Alignment.centerLeft;
+    var alignment = (data.identificador == widget.identificador) ? Alignment.centerRight : Alignment.centerLeft;
 
     return Container(
       alignment: alignment,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          crossAxisAlignment: (data.idUsuario == widget.receverUserId) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          mainAxisAlignment: (data.idUsuario == widget.receverUserId) ? MainAxisAlignment.end : MainAxisAlignment.start,
+          crossAxisAlignment: (data.identificador == widget.identificador) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          mainAxisAlignment: (data.identificador == widget.identificador) ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
             const SizedBox(
               height: 5,
             ),
-            ChatBubble(message: data.comentario, color: data.idUsuario == widget.receverUserId ? "send" : "received"),
+            ChatBubble(message: data.comentario, color: data.identificador == widget.identificador ? "send" : "received"),
           ],
         ),
       ),
@@ -100,7 +101,7 @@ class _ComentariosPageState extends State<ComentariosPage> {
           Expanded(
             child: MyTextField(
               controller: _messageController,
-              hintText: "Enter message",
+              hintText: "Escribe un comentario",
               obscureText: false,
             ),
           ),
@@ -110,7 +111,7 @@ class _ComentariosPageState extends State<ComentariosPage> {
               Icons.send,
               size: 40,
             ),
-            color: AppColors.bluePrimaryColor,
+            color: AppColors.orangeColor,
           ),
         ],
       ),
@@ -127,15 +128,14 @@ class _ComentariosPageState extends State<ComentariosPage> {
 
   void sendMessage() async {
     if (_messageController.text.isNotEmpty) {
-      await ordersProvider.saveComent(widget.receverUserId, widget.idOrden, _messageController.text);
+      await ordersProvider.saveComent(widget.receverUserId, widget.idOrden, _messageController.text, widget.identificador);
       // Crea un nuevo comentario localmente
       final nuevoComentario = Comentarios(
         idComentario: widget.idOrden,
-        identificador: "Cliente",
+        identificador: widget.identificador,
         idTrabajo: widget.idOrden,
         idUsuario: widget.receverUserId,
         comentario: _messageController.text,
-        // Agrega cualquier otro campo necesario para el objeto Comentarios
       );
 
       // Agrega el comentario a la lista local

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/MensajesModel.dart';
+import '../../providers/Auth_provider.dart';
+import '../../providers/Provedor_provider.dart';
 import '../../utils/Colors_Utils.dart';
 import '../../utils/SpinnerLoader.dart';
 import '../../utils/chat_bubble.dart';
@@ -9,10 +11,10 @@ import '../../providers/Orders_provider.dart';
 
 class ChatViewPage extends StatefulWidget {
   final int idProveedor;
+  final int idCliente;
   final String proveedor;
 
-  const ChatViewPage(
-      {super.key, required this.idProveedor, required this.proveedor});
+  const ChatViewPage({super.key, required this.idProveedor, required this.idCliente, required this.proveedor});
 
   @override
   State<ChatViewPage> createState() => _ChatViewPageState();
@@ -23,15 +25,29 @@ class _ChatViewPageState extends State<ChatViewPage> {
   final ScrollController _scrollController = ScrollController();
   late OrdersProvider ordersProvider;
   late int _idProveedor;
-  // final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
+  late int _idCliente;
+  late String _identificador;
 
   @override
   void initState() {
     super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
     _idProveedor = widget.idProveedor;
+    _idCliente = widget.idCliente;
     final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
-    ordersProvider.getChat(
-        _idProveedor); // Llamar al método getOrders al iniciar la pantalla
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    authProvider.getTypeUser();
+    if (authProvider.typeUser == 3) {
+      _identificador = "Cliente";
+      ordersProvider.getChat(_idProveedor, _idCliente, "Cliente");
+    } else {
+      _identificador = "Proveedor";
+      ordersProvider.getChat(_idProveedor, _idCliente, "Proveedor");
+    }
   }
 
   @override
@@ -44,32 +60,30 @@ class _ChatViewPageState extends State<ChatViewPage> {
   Widget build(BuildContext context) {
     return Consumer<OrdersProvider>(
       builder: (context, ordersProvider, child) {
-        final spiner = Spinner();
+        // const spiner = Spinner();
         return Scaffold(
             appBar: AppBar(
                 title: Text(
                   widget.proveedor,
                   style: const TextStyle(
-                    color: AppColors.blueSecondColor,
+                    color: AppColors.white,
                   ),
                 ),
                 backgroundColor: AppColors.backgroundColor,
                 iconTheme: const IconThemeData(
-                  color: AppColors.blueSecondColor,
+                  color: AppColors.white,
                 )),
-            body: ordersProvider.isLoading
-                ? Center(child: spiner)
-                : Column(
-                    children: [
-                      Expanded(
-                        child: _buildMessageList(),
-                      ),
-                      _buildMessageInput(),
-                      const SizedBox(
-                        height: 25,
-                      )
-                    ],
-                  ));
+            body: Column(
+              children: [
+                Expanded(
+                  child: _buildMessageList(),
+                ),
+                _buildMessageInput(),
+                const SizedBox(
+                  height: 25,
+                )
+              ],
+            ));
       },
     );
   }
@@ -90,28 +104,20 @@ class _ChatViewPageState extends State<ChatViewPage> {
   }
 
   Widget _buildMessageItem(Mensajes data) {
-    var alignment = (data.identificador == "Cliente")
-        ? Alignment.centerRight
-        : Alignment.centerLeft;
+    var alignment = (data.identificador == _identificador) ? Alignment.centerRight : Alignment.centerLeft;
 
     return Container(
       alignment: alignment,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          crossAxisAlignment: (data.identificador == "Cliente")
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-          mainAxisAlignment: (data.identificador == "Cliente")
-              ? MainAxisAlignment.end
-              : MainAxisAlignment.start,
+          crossAxisAlignment: (data.identificador == _identificador) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          mainAxisAlignment: (data.identificador == _identificador) ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
             const SizedBox(
               height: 5,
             ),
-            ChatBubble(
-                message: data.contenido,
-                color: data.identificador == "Cliente" ? "send" : "received"),
+            ChatBubble(message: data.contenido, color: data.identificador == _identificador ? "send" : "received"),
           ],
         ),
       ),
@@ -126,7 +132,7 @@ class _ChatViewPageState extends State<ChatViewPage> {
           Expanded(
             child: MyTextField(
               controller: _messageController,
-              hintText: "Enter message",
+              hintText: "Escribe un mensaje",
               obscureText: false,
             ),
           ),
@@ -134,9 +140,9 @@ class _ChatViewPageState extends State<ChatViewPage> {
             onPressed: sendMessage,
             icon: const Icon(
               Icons.send,
-              size: 40,
+              size: 45,
             ),
-            color: AppColors.bluePrimaryColor,
+            color: AppColors.orangeColor,
           ),
         ],
       ),
@@ -156,15 +162,14 @@ class _ChatViewPageState extends State<ChatViewPage> {
       final nuevoMensaje = Mensajes(
         idMensajes: 0,
         contenido: _messageController.text,
-        idCliente: 0,
+        idCliente: _idCliente,
         idProveedor: _idProveedor,
         created_at: "",
-        identificador: "Cliente",
+        identificador: _identificador,
         status: "Enviado",
         // Añade otros atributos si es necesario
       );
-      await ordersProvider.saveMessage(
-          widget.idProveedor, _messageController.text);
+      await ordersProvider.saveMessage(widget.idProveedor, widget.idCliente, _messageController.text, _identificador);
       setState(() {
         ordersProvider.dataChatMessagge.add(nuevoMensaje);
       });

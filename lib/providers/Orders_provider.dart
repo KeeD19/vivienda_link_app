@@ -19,7 +19,9 @@ class OrdersProvider with ChangeNotifier {
   String _errorMessage = '';
   List<Order> _data = [];
   List<ListaChatProv> _dataChat = [];
+  List get dataChat => _dataChat;
   ClientModel? _dataClient;
+  get dataClient => _dataClient;
   List<PlanModel> _dataPlan = [];
   List<ServiciosModel> _dataServicios = [];
   List<Mensajes> _dataChatMessagge = [];
@@ -28,8 +30,6 @@ class OrdersProvider with ChangeNotifier {
   String get errorMessage => _errorMessage;
   String get successMessage => _successMessage;
   List get data => _data;
-  List get dataChat => _dataChat;
-  get dataClient => _dataClient;
   List get dataPlan => _dataPlan;
   List get dataServicios => _dataServicios;
   List get dataChatMessagge => _dataChatMessagge;
@@ -44,6 +44,8 @@ class OrdersProvider with ChangeNotifier {
   int get idSolicitud => _idSolicitud;
   int _idProvedor = 0;
   int get idProvedor => _idProvedor;
+  int _idCliente = 0;
+  int get idCliente => _idCliente;
   String _correoProv = "";
   String get correoProv => _correoProv;
   String _clientSecret = "";
@@ -112,13 +114,13 @@ class OrdersProvider with ChangeNotifier {
   }
 
   // Método para enviar comentarios
-  Future<void> saveComent(int idCliente, int idOrden, String message) async {
+  Future<void> saveComent(int idCliente, int idOrden, String message, String identificador) async {
     _errorMessage = "";
     _successMessage = "";
     _isLoading = true;
     Map<String, dynamic> data = {
       'comentario': message,
-      'identificador': "Cliente",
+      'identificador': identificador,
       'idUsuario': idCliente,
       'idTrabajo': idOrden,
     };
@@ -172,15 +174,13 @@ class OrdersProvider with ChangeNotifier {
     }
   }
 
-  Future<void> getChat(int idProv) async {
-    String? idUser = await _saveLocalService.getData("idUser");
-    int idUser0 = int.tryParse(idUser!) ?? 0;
+  Future<void> getChat(int idProv, int idCliente, String identificador) async {
     _errorMessage = '';
     _successMessage = '';
     _isLoading = true;
     notifyListeners();
     try {
-      final response = await _apiService.getData('Mensajes/ObtenerMensaje?idProveedor=$idProv&idCliente=$idUser0&Identificador=Cliente');
+      final response = await _apiService.getData('Mensajes/ObtenerMensaje?idProveedor=$idProv&idCliente=$idCliente&Identificador=$identificador');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
@@ -204,18 +204,16 @@ class OrdersProvider with ChangeNotifier {
     }
   }
 
-  Future<void> saveMessage(int idProvedor, String message) async {
-    String? idUser = await _saveLocalService.getData("idUser");
-    int idUser0 = int.tryParse(idUser!) ?? 0;
+  Future<void> saveMessage(int idProvedor, int idCliente, String message, String identificador) async {
     _errorMessage = "";
     _successMessage = "";
     _isLoading = true;
     Map<String, dynamic> data = {
       'contenido': message,
       'idProveedor': idProvedor,
-      'idCliente': idUser0,
+      'idCliente': idCliente,
       'status': "Enviado",
-      'identificador': "Cliente",
+      'identificador': identificador,
     };
     notifyListeners(); // Notificar a los widgets que el estado ha cambiado
     try {
@@ -376,7 +374,7 @@ class OrdersProvider with ChangeNotifier {
     String type = "Cliente";
     notifyListeners();
     try {
-      final response = await _apiService.getData('Planes/ObtenerPlanes?typePlan=$type');
+      final response = await _apiService.getData('Planes/ObtenerPlanesOption?typePlan=$type');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
@@ -432,7 +430,7 @@ class OrdersProvider with ChangeNotifier {
     }
   }
 
-  Future<void> getServiciosFiltrados(String servicio, String pais, String estado, String municipio, String amount) async {
+  Future<void> getServiciosFiltrados(String servicio, String pais, String estado, String municipio, String amount, String distrito) async {
     notifyListeners();
     _errorMessage = '';
     _successMessage = '';
@@ -440,7 +438,7 @@ class OrdersProvider with ChangeNotifier {
     String service = normalizeString(servicio);
 
     try {
-      final response = await _apiService.getData('Servicios/ObtenerServiciosFiltrados?nombreServicio=$servicio&amount=$amount&country=$pais&city=$estado&province=$municipio');
+      final response = await _apiService.getData('Servicios/ObtenerServiciosFiltrados?nombreServicio=$service&amount=$amount&country=$pais&city=$estado&province=$municipio&distrito=$distrito');
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         final List<dynamic> jsonData = jsonResponse['data'];
@@ -501,8 +499,8 @@ class OrdersProvider with ChangeNotifier {
   String normalizeString(String input) {
     String uppercased = input.toUpperCase();
     String noAccents = removeDiacritics(uppercased);
-    String noSpaces = noAccents.replaceAll(' ', '');
-    return noSpaces;
+    // String noSpaces = noAccents.replace(' ', '');
+    return noAccents;
   }
 
   Future<void> saveSolicitud(int idServicio, int idProvedor, int idCobertura, String createAt) async {
@@ -602,18 +600,17 @@ class OrdersProvider with ChangeNotifier {
   }
 
   Future<void> getDetailMessagge(int idMessage) async {
-    String? idUser = await _saveLocalService.getData("idUser");
-    int idUser0 = int.tryParse(idUser!) ?? 0;
     _errorMessage = '';
     _successMessage = '';
     _isLoading = true;
     notifyListeners();
     try {
-      final response = await _apiService.getResponse('Mensajes/ObtenerMensajeClient?idCliente=$idUser0&idMensaje=$idMessage');
+      final response = await _apiService.getResponse('Mensajes/ObtenerMensajeClient?idMensaje=$idMessage');
 
       int statusCode = response['statusCode'];
       if (statusCode == 200) {
         _idProvedor = response['idProvedor'];
+        _idCliente = response['idCliente'];
         _correoProv = response['correoProvedor'];
       } else {
         _errorMessage = 'Error: $statusCode';
@@ -662,6 +659,7 @@ class OrdersProvider with ChangeNotifier {
     _successMessage = "";
     String? idUser = await _saveLocalService.getData("idUser");
     int idUser0 = int.tryParse(idUser!) ?? 0;
+    // DateTime fechaHoraActual = DateTime.now();
     Map<String, dynamic> data = {'monto': amount, 'token': '', 'idCliente': idUser0, 'idProvedor': idProvedor, 'idOrden': idOrden};
     try {
       final response = await _apiService.postData('PagosSripe/create-payment-intent', data);
@@ -703,19 +701,19 @@ class OrdersProvider with ChangeNotifier {
     }
   }
 
-  Future<void> saveContact(String nombre, String numero) async {
+  Future<void> saveContact(String nombre, String numero, String tpeClient) async {
     _isLoading = true;
     notifyListeners();
     _errorMessage = "";
     _successMessage = "";
     String? idUser = await _saveLocalService.getData("idUser");
     int idUser0 = int.tryParse(idUser!) ?? 0;
-    Map<String, dynamic> data = {'nombreContacto': nombre, 'telefono': numero, 'idCliente': idUser0};
+    Map<String, dynamic> data = {'nombreContacto': nombre, 'telefono': numero, 'idUser': idUser0, 'identificador': tpeClient};
     try {
       final response = await _apiService.postData('ContactEmergent/AgregarContacto', data);
       int statusCode = response['statusCode'];
       if (statusCode == 200) {
-        _successMessage = "Pago realizado correctamente";
+        _successMessage = "El contacto se guardó correctamente";
         await _saveLocalService.saveData("contactoName", nombre);
         await _saveLocalService.saveData("contactoPhone", numero);
       }
@@ -728,7 +726,7 @@ class OrdersProvider with ChangeNotifier {
     }
   }
 
-  Future<void> getContact() async {
+  Future<void> getContact(String typeClient) async {
     _isLoading = true;
     notifyListeners();
     String? idUser = await _saveLocalService.getData("idUser");
@@ -736,7 +734,7 @@ class OrdersProvider with ChangeNotifier {
     _errorMessage = '';
     _successMessage = '';
     try {
-      final response = await _apiService.getResponse('ContactEmergent/ObtenerContacto?idCliente=$idUser0');
+      final response = await _apiService.getResponse('ContactEmergent/ObtenerContacto?idCliente=$idUser0&identificador=$typeClient');
 
       int statusCode = response['statusCode'];
       if (statusCode == 200) {
@@ -765,7 +763,9 @@ class OrdersProvider with ChangeNotifier {
 
       int statusCode = response['statusCode'];
       if (statusCode == 200) {
-        debugPrint('todo bien: ${response}');
+        _contactSOS = {};
+        _successMessage = "Se elmino de manera correcta";
+        notifyListeners();
       } else {
         debugPrint('error: $statusCode');
         _errorMessage = 'Error: $statusCode';

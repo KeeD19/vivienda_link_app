@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vivienda_link_app/models/FilterOptionsModel.dart';
@@ -6,9 +5,10 @@ import 'package:vivienda_link_app/utils/Colors_Utils.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import '../providers/Orders_provider.dart';
-import '../screens/orders/AddOrder.dart';
 import 'ScaffoldMessengerUtil.dart';
 import 'SpinnerLoader.dart';
+import 'SquareInfo.dart';
+import 'TimerCard.dart';
 
 class AddSolicitudEmergent extends StatefulWidget {
   final void Function(String status) onSubmitted;
@@ -24,45 +24,12 @@ class _AddSolicitudEmergentState extends State<AddSolicitudEmergent> {
   TextEditingController statusController = TextEditingController();
   late Timer _timer;
   bool _timerActive = false;
-  int _remainingSeconds = 300; // 5 minutos en segundos
   String rechazado = "";
   int idSolicitud = 0;
 
   @override
   void initState() {
     super.initState();
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Mensaje recibido en espera: ${message.notification?.title}');
-      if (message.notification?.title == "Solicitud Aceptada") {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => AddOrderPage(options: widget.options)));
-      }
-      if (message.notification?.title == "Solicitud Rechazada") {
-        rechazado = "Intenta con otro proveedor";
-        // _remainingSeconds = 0;
-        _timer.cancel();
-        setState(() {});
-      }
-    });
-  }
-
-  void _startTimer(int idSolicitud) {
-    final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_remainingSeconds > 0) {
-          _remainingSeconds--;
-          _timerActive = true;
-          if (_remainingSeconds == 0) {
-            rechazado = "Intenta con otro proveedor";
-            ordersProvider.updatestatusSolicitud(idSolicitud);
-          }
-        } else {
-          _timer.cancel();
-          rechazado = "Intenta con otro proveedor";
-          ordersProvider.updatestatusSolicitud(idSolicitud);
-        }
-      });
-    });
   }
 
   @override
@@ -72,12 +39,6 @@ class _AddSolicitudEmergentState extends State<AddSolicitudEmergent> {
     super.dispose();
   }
 
-  String _formatTime(int seconds) {
-    final minutes = seconds ~/ 60;
-    final remainingSeconds = seconds % 60;
-    return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
-  }
-
   String _Lugar(String pais, String estado, String mpo) {
     return "$mpo, $estado, $pais";
   }
@@ -85,198 +46,119 @@ class _AddSolicitudEmergentState extends State<AddSolicitudEmergent> {
   @override
   Widget build(BuildContext context) {
     final ordersProvider = Provider.of<OrdersProvider>(context);
-    return AlertDialog(
-      title: const Text(
-        'Esta por enviar una solicitud',
-        style: TextStyle(color: AppColors.backgroundColor),
-      ),
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+    return Dialog(
+      insetPadding: EdgeInsets.zero,
+      backgroundColor: AppColors.backgroundSecondColor,
+      child: Stack(
         children: [
-          const SizedBox(height: 15),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0), // Espacio lateral
-            child: RichText(
-              textAlign: TextAlign.left,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: "Servicio: ",
-                    style: TextStyle(
-                      color: Colors.black.withOpacity(0.8),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
-                    ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 30),
+                const Text(
+                  'Estas por enviar una solicitud',
+                  style: TextStyle(
+                    color: AppColors.backgroundColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
                   ),
-                  TextSpan(
-                    text: '  ${widget.options.nombreServicio}',
-                    style: TextStyle(
-                      color: Colors.black.withOpacity(0.5),
-                      fontSize: 18.0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 15),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0), // Espacio lateral
-            child: RichText(
-              textAlign: TextAlign.left,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: "Monto: ",
-                    style: TextStyle(
-                      color: Colors.black.withOpacity(0.8),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
-                    ),
-                  ),
-                  TextSpan(
-                    text: '  \$${widget.options.precioTotal.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      color: Colors.black.withOpacity(0.5),
-                      fontSize: 18.0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 15),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0),
-            child: RichText(
-              textAlign: TextAlign.left,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: "Proveedor: ",
-                    style: TextStyle(
-                      color: Colors.black.withOpacity(0.8),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
-                    ),
-                  ),
-                  TextSpan(
-                    text: '  ${widget.options.nombreProvedor}',
-                    style: TextStyle(
-                      color: Colors.black.withOpacity(0.5),
-                      fontSize: 18.0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 15),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0),
-            child: RichText(
-              textAlign: TextAlign.left,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: "Lugar del servicio: ",
-                    style: TextStyle(
-                      color: Colors.black.withOpacity(0.8),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
-                    ),
-                  ),
-                  TextSpan(
-                    text: _Lugar(widget.options.cobertura['pais'], widget.options.cobertura['estado'], widget.options.cobertura['municipio']),
-                    // text: '  mexico',
-                    style: TextStyle(
-                      color: Colors.black.withOpacity(0.5),
-                      fontSize: 18.0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 15),
-          ordersProvider.isLoading
-              ? const Center(
-                  child: Spinner(),
-                )
-              : _timerActive
-                  ? Center(
-                      child: Text(
-                        rechazado == "" ? 'Espera mientras se confirma el servicio: ${_formatTime(_remainingSeconds)}' : rechazado,
+                ),
+                const SizedBox(height: 20),
+                _timerActive
+                    ? TimerCard(
+                        initialSeconds: 600,
+                        // initialSeconds: 10,
+                        description: 'Espera mientras se confirma el servicio',
+                        options: widget.options,
+                        onTimerEnd: () {
+                          rechazado = "Intenta con otro proveedor";
+                          ordersProvider.updatestatusSolicitud(idSolicitud);
+                          debugPrint('¡El temporizador ha terminado!');
+                        },
+                      )
+                    : const Center(),
+                const SizedBox(height: 10),
+                squareInfo(icon: Icons.app_settings_alt_outlined, title: "Servicio:", desc: widget.options.nombreServicio, type: "Icon", selfie: ""),
+                const SizedBox(height: 10),
+                squareInfo(icon: Icons.monetization_on, title: "Monto:", desc: widget.options.precioTotal.toStringAsFixed(2), type: "Icon", selfie: ""),
+                const SizedBox(height: 10),
+                squareInfo(icon: Icons.monetization_on, title: "Proveedor:", desc: widget.options.nombreProvedor, type: "Selfie", selfie: widget.options.selfie),
+                const SizedBox(height: 10),
+                squareInfo(icon: Icons.location_on_rounded, title: "Lugar del servicio:", desc: _Lugar(widget.options.cobertura['pais'], widget.options.cobertura['estado'], widget.options.cobertura['municipio']), type: "Icon", selfie: ""),
+                rechazado != ""
+                    ? Text(
+                        rechazado,
                         style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.backgroundColor,
+                          color: AppColors.errorColor,
+                        ),
+                      )
+                    : const Center(),
+                const SizedBox(height: 20),
+                ordersProvider.isLoading
+                    ? const Center(
+                        child: Spinner(),
+                      )
+                    : SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            if (rechazado == "") {
+                              DateTime now = DateTime.now();
+                              String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+                              await ordersProvider.saveSolicitud(widget.options.idServicio, widget.options.idProveedor, widget.options.cobertura['idCobertura'], formattedDate);
+                              idSolicitud = ordersProvider.idSolicitud;
+                              if (ordersProvider.errorMessage.isEmpty == true) {
+                                // _startTimer(idSolicitud);
+                                _timerActive = true;
+                              } else {
+                                showCustomSnackBar(context, ordersProvider.errorMessage, isError: true);
+                              }
+                            } else {
+                              Navigator.pop(context);
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.orangeColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          ),
+                          child: const Text(
+                            "Aceptar",
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 18,
+                            ),
+                          ),
                         ),
                       ),
-                    )
-                  : const Center(),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () async {
-            if (idSolicitud != 0) {
-              await ordersProvider.updatestatusSolicitud(idSolicitud);
-            }
-            Navigator.pop(context);
-          },
-          style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.all(
-              AppColors.errorColor,
+              ],
             ),
           ),
-          child: const Text(
-            'Cancelar',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-        rechazado == ""
-            ? TextButton(
-                onPressed: () async {
-                  DateTime now = DateTime.now();
-                  String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
-                  await ordersProvider.saveSolicitud(widget.options.idServicio, widget.options.idProveedor, widget.options.cobertura['idCobertura'], formattedDate);
-                  idSolicitud = ordersProvider.idSolicitud;
-                  if (ordersProvider.errorMessage.isEmpty == true) {
-                    _startTimer(idSolicitud);
-                  } else {
-                    showCustomSnackBar(context, ordersProvider.errorMessage, isError: true);
-                  }
-                },
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(
-                    AppColors.backgroundColor,
-                  ),
-                ),
-                child: const Text(
-                  'Aceptar',
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
-            : TextButton(
-                onPressed: () async {
-                  setState(() {
-                    widget.onSubmitted("rechazado");
-                    Navigator.pop(context);
-                  });
-                },
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(
-                    AppColors.backgroundColor,
-                  ),
-                ),
-                child: const Text(
-                  'Reintentar',
-                  style: TextStyle(color: Colors.white),
-                ),
+          Positioned(
+            right: 0,
+            top: 0,
+            child: IconButton(
+              icon: const Icon(
+                Icons.close,
+                color: AppColors.activeBlack,
+                size: 35,
               ),
-      ],
+              onPressed: () {
+                if (idSolicitud != 0) {
+                  ordersProvider.updatestatusSolicitud(idSolicitud);
+                }
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

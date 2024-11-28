@@ -1,20 +1,31 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color orangeColor = Color(0xFFF16414);
-  static const Color bluePrimaryColor = Color(0xFF233BFF);
-  static const Color blueSecondColor = Color(0xFF439Ed5);
+  static const double border = 5;
+  static const Color orangeColor = Color(0xFFF05421);
+  static const Color bluePrimaryColor = Color(0xFF243BFF);
+  static const Color blueSecondColor = Color(0xFF6CA4F5);
+  static const Color skyBlue = Color(0xFF3ABEFF);
+  static const Color blueTh = Color(0xFF3ABEFF);
   static const Color backgroundColor = Color(0xFF001C43);
-  static const Color successColor = Color(0xFF32f31f);
-  // static const Color pendingColor = Color(0xFF001C43);
+  static const Color fondSearchColor = Color(0xFF022657);
+  static const Color backgroundSecondColor = Color(0xFFDBE6ED);
+  static const Color backgroundIcons = Color(0xFF1E3A5F);
+  // static const Color backgroundIcons = Color(0xFF1E3A5F);
+  static const Color successColor = Color(0xFF10AA4D);
+  static const Color white = Color(0xffffffff);
   static const Color errorColor = Color(0xFFE12020);
+  static const Color grey = Color.fromARGB(255, 167, 167, 167);
+  static const Color greySecond = Color.fromARGB(255, 228, 228, 228);
+  static const Color activeBlack = Color(0xff272727);
+  static const Color purple = Color(0XFF5C4FFF);
+  static const Color purpleSecond = Color(0XFFA19AFD);
+  // static const Color pendingColor = Color(0xFF001C43);
+  static const Color text = Color.fromARGB(255, 167, 167, 167);
   static const Color primary = Color(0xff10AA4D);
   static const Color primary2 = Color(0xff70F2A1);
-  static const Color heading = Color(0xff1E1E1E);
-  static const Color activeBlack = Color(0xff272727);
-  static const Color text = Color(0xff545454);
-  static Color lightText = const Color(0xff828282).withOpacity(0.15);
-  static const Color white = Color(0xffffffff);
+  static const Color heading = Color.fromARGB(255, 0, 0, 0);
+  static Color lightText = const Color.fromARGB(255, 99, 99, 99).withOpacity(0.15);
 
   static const MaterialColor customSwatch = MaterialColor(
     0xFF6200EE,

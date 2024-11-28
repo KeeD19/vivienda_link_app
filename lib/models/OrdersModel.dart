@@ -9,8 +9,8 @@ class Order {
   final int idServicio;
   final String? tipoServicio;
   final String? direccion;
-  final citaFecha;
-  final String recomendacion;
+  final dynamic citaFecha;
+  final String? recomendacion;
   final String descripcionSolicitud;
   final String estado;
   final int idProveedor;
@@ -19,6 +19,7 @@ class Order {
   final int? fasePago;
   final archivo;
   final String? extencionArchivo;
+  final String? cliente;
   final String? proveedor;
   // final double? monto;
   // final int? estadoPago;
@@ -42,6 +43,7 @@ class Order {
       required this.archivo,
       required this.extencionArchivo,
       required this.proveedor,
+      required this.cliente,
       // required this.monto,
       // required this.estadoPago,
       required this.comentarios,
@@ -70,6 +72,7 @@ class Order {
         archivo: json['archivo'] != null ? json['archivo'] : null,
         extencionArchivo: json['extencionArchivo'],
         proveedor: json['proveedor'],
+        cliente: json['cliente'],
         // monto: json['monto'],
         // estadgo: json['estadoPago'],
         comentarios: json['comentarios'] != null ? (json['comentarios'] as List<dynamic>).map((item) => Comentarios.fromJson(item)).toList() : [],

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'package:vivienda_link_app/models/OrdersModel.dart';
+import 'package:vivienda_link_app/utils/Colors_Utils.dart';
 import 'package:vivienda_link_app/utils/SpinnerLoader.dart';
 
 import '../providers/Orders_provider.dart';
@@ -42,25 +43,53 @@ class _PaymentPageState extends State<PaymentPage> {
   Widget build(BuildContext context) {
     final ordersProvider = Provider.of<OrdersProvider>(context);
     return Scaffold(
+      backgroundColor: AppColors.backgroundSecondColor,
       body: ordersProvider.isLoading
           ? const Center(child: Spinner())
           : Padding(
-              padding: const EdgeInsets.all(16.0),
+              // padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.06, // 5% del ancho de la pantalla
+              ),
               child: Form(
                 key: paymentForm,
-                child: ListView(
-                  shrinkWrap: true,
+                child: Column(
+                  // shrinkWrap: true,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: 20),
+                    Center(
+                      child: Image.asset(
+                        'assets/images/cardPay.png',
+                        width: 300,
+                        height: 300,
+                        // fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 30),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         var paymentAmount = (widget.monto * 100);
                         makePayment(
                           amount: paymentAmount.round(),
                           currency: "USD",
                         );
                       },
-                      child: const Text('Realizar el pago'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.orangeColor,
+                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppColors.border),
+                        ),
+                      ),
+                      child: const Text(
+                        'Pagar',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
