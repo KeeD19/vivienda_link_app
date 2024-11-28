@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../providers/Auth_provider.dart';
 import '../../providers/Orders_provider.dart';
+import '../../providers/Provedor_provider.dart';
+import '../../utils/Colors_Utils.dart';
 import '../../utils/SpinnerLoader.dart';
 import 'ChatView.dart';
 
@@ -15,43 +20,73 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
     final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
-    ordersProvider
-        .getListchatProv(); // Llamar al método getOrders al iniciar la pantalla
+    final provProvider = Provider.of<ProvedorProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    authProvider.getTypeUser();
+    if (authProvider.typeUser == 3) {
+      ordersProvider.getListchatProv();
+    } else {
+      provProvider.getListchatProv();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // final FirebaseAuth _auth = FirebaseAuth.instance;
     final ordersProvider = Provider.of<OrdersProvider>(context);
-    final spiner = Spinner();
+    final provProvider = Provider.of<ProvedorProvider>(context);
+    final authProvider = Provider.of<AuthProvider>(context);
+    final dataChat = authProvider.typeUser == 3 ? ordersProvider.dataChat : provProvider.dataChat;
 
     return Scaffold(
-        body: ordersProvider.isLoading
-            ? Center(child: spiner)
-            : ordersProvider.data.isNotEmpty
+        backgroundColor: AppColors.backgroundSecondColor,
+        body: ordersProvider.isLoading || provProvider.isLoading
+            ? const Center(child: Spinner())
+            : dataChat.isNotEmpty
                 ? ListView.builder(
-                    itemCount: ordersProvider.dataChat.length,
+                    itemCount: dataChat.length,
                     itemBuilder: (context, index) {
-                      final list = ordersProvider.dataChat[index];
+                      final list = dataChat[index];
                       return Padding(
                         padding: const EdgeInsets.all(6.0),
                         child: Container(
+                          height: 80,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(AppColors.border),
+                            color: AppColors.white,
                           ),
                           child: ListTile(
-                            leading:
-                                const Icon(Icons.person, color: Colors.grey),
-                            title: Text(list.correoProveedor),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15), // Alineación del contenido
+                            leading: list.selfie != null
+                                ? ClipOval(
+                                    child: Image.memory(
+                                      base64Decode(list.selfie),
+                                      width: 60,
+                                      height: 60,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : const CircleAvatar(
+                                    radius: 35,
+                                    child: Icon(Icons.person, color: AppColors.grey),
+                                  ),
+                            title: Text(
+                              list.correoProveedor ?? list.correoCliente,
+                              style: const TextStyle(fontSize: 16), // Opcional, para ajustar tamaño
+                            ),
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ChatViewPage(
                                     idProveedor: list.idProveedor,
-                                    proveedor: list.correoProveedor,
+                                    idCliente: list.idCliente,
+                                    proveedor: list.correoProveedor ?? list.correoCliente,
                                   ),
                                 ),
                               );

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:vivienda_link_app/providers/Provedor_provider.dart';
 import './providers/Auth_provider.dart';
 import './screens/home/Home.dart';
 import './providers/Orders_provider.dart';
@@ -29,16 +32,25 @@ void main() async {
   });
   Stripe.publishableKey = publishableKey;
   await Stripe.instance.applySettings();
+  configureLocale();
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => OrdersProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => ProvedorProvider()),
       ],
       child: const MyApp(),
     ),
   );
+}
+
+void configureLocale() {
+  // Inicializa la localización para el idioma español
+  initializeDateFormatting('es_ES', null).then((_) {
+    // Luego puedes usar Intl con el locale 'es_ES'
+  });
 }
 
 class MyApp extends StatelessWidget {

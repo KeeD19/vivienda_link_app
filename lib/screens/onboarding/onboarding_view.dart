@@ -8,27 +8,30 @@ class OnboardingView extends StatelessWidget {
   final int index;
   @override
   Widget build(BuildContext context) {
-    // final screenWidth = MediaQuery.of(context).size.width;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 35.0),
+      padding: const EdgeInsets.symmetric(horizontal: 15.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           Container(
             alignment: Alignment.center,
-            height: MediaQuery.sizeOf(context).height * 0.5,
+            height: MediaQuery.sizeOf(context).height * 0.35,
             padding: const EdgeInsets.all(10),
-            child: Image.asset(
-              '${onBoardingList[index]['image']}',
-              // width: screenWidth * 1000,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.asset(
+                '${onBoardingList[index]['image']}',
+                width: 150,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           CustomText(
             text: '${onBoardingList[index]['title']}',
             textAlign: TextAlign.start,
-            color: AppColors.heading,
+            color: AppColors.activeBlack,
             height: 1.1,
             fontSize: 33,
             fontWeight: FontWeight.bold,
@@ -38,11 +41,10 @@ class OnboardingView extends StatelessWidget {
             text: '${onBoardingList[index]['description']}',
             textAlign: TextAlign.start,
             fontFamily: 'outfit',
-            color: AppColors.text,
+            color: AppColors.activeBlack,
             height: 1,
             maxLines: 6,
             fontSize: 15,
-            fontWeight: FontWeight.w500,
           ),
         ],
       ),

@@ -29,9 +29,9 @@ class _MealsListViewState extends State<MealsListView> {
     final planes = ordersProvider.dataPlan;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final cardWidth =
-        screenWidth / 2 - 24; // Ajuste de 24 para padding entre tarjetas
+    final cardWidth = screenWidth / 2 - 24; // Ajuste de 24 para padding entre tarjetas
     final cardHeight = screenHeight / 3; // 1/3 de la pantalla
+    debugPrint("planes: $planes");
     return ordersProvider.isLoading
         ? const Center(child: Spinner())
         : ordersProvider.dataPlan.isNotEmpty
@@ -105,14 +105,13 @@ class PlanesView extends StatelessWidget {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.only(
-                    top: 54, left: 16, right: 16, bottom: 8),
+                padding: const EdgeInsets.only(top: 54, left: 16, right: 16, bottom: 8),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      planesListData?.name ?? 'No title',
+                      planesListData?.nombrePlan ?? 'No title',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
@@ -123,7 +122,7 @@ class PlanesView extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      planesListData?.frequencyPlan ?? 'No frequency plan',
+                      planesListData?.tipoPlan == 1 ? "Mensual" : "Anual",
                       style: const TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
@@ -133,9 +132,7 @@ class PlanesView extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      planesListData?.amount != null
-                          ? '\$${planesListData!.amount.toStringAsFixed(2)}'
-                          : 'No price',
+                      planesListData?.monto != null ? '\$${planesListData!.monto.toStringAsFixed(2)}' : 'No price',
                       style: const TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 14,

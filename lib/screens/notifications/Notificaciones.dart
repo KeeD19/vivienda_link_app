@@ -6,8 +6,13 @@ import 'package:vivienda_link_app/providers/Orders_provider.dart';
 import 'package:vivienda_link_app/screens/home/Home.dart';
 import 'package:vivienda_link_app/screens/orders/DetailsOrders.dart';
 import 'package:vivienda_link_app/utils/HeadUtil.dart';
+import '../../providers/Auth_provider.dart';
 import '../../providers/Notification_Provider.dart';
+import '../../providers/Provedor_provider.dart';
+import '../../utils/Colors_Utils.dart';
+import '../../utils/ScaffoldMessengerUtil.dart';
 import '../../utils/SpinnerLoader.dart';
+import '../Proveedor/utils/JobOrderEmergent.dart';
 import '../chat/ChatView.dart';
 
 class NotificacionesPage extends StatefulWidget {
@@ -19,11 +24,53 @@ class NotificacionesPage extends StatefulWidget {
 }
 
 class _NotificacionesPageState extends State<NotificacionesPage> {
+  late String _identificador;
   @override
   void initState() {
     super.initState();
     final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
-    notificationProvider.getNotificaciones();
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    authProvider.getTypeUser();
+    if (authProvider.typeUser == 3) {
+      _identificador = "Cliente";
+      notificationProvider.getNotificaciones("Cliente");
+    } else {
+      _identificador = "Proveedor";
+      notificationProvider.getNotificaciones("Proveedor");
+    }
+  }
+
+  void _showJobDialog(BuildContext context, String title, String description, int idSolicitud) {
+    debugPrint('id de lasolicitud: $idSolicitud');
+    final provProvider = Provider.of<ProvedorProvider>(context, listen: false);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return JobAlertDialog(
+          title: title,
+          message: description,
+          onAccept: () async {
+            await provProvider.updateSolicitud(idSolicitud, 1);
+            Navigator.of(context).pop();
+            if (provProvider.errorMessage == "") {
+              showCustomSnackBar(context, "Solicitud Aceptada", isError: false);
+            } else {
+              showCustomSnackBar(context, provProvider.errorMessage, isError: true);
+            }
+          },
+          onReject: () async {
+            await provProvider.updateSolicitud(idSolicitud, 2);
+            Navigator.of(context).pop();
+            if (provProvider.errorMessage == "") {
+              showCustomSnackBar(context, "Solicitud Rechazada", isError: false);
+            } else {
+              showCustomSnackBar(context, provProvider.errorMessage, isError: true);
+            }
+          },
+        );
+      },
+    );
   }
 
   String timeAgo(DateTime date) {
@@ -47,7 +94,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
     }
   }
 
-  void _onMenuOptionSelected(BuildContext context, String option, int id, int idModulo, int idNotificacion, int status) async {
+  void _onMenuOptionSelected(BuildContext context, String option, int id, int idModulo, int idNotificacion, int status, String title, String desc) async {
     final rootContext = context;
     final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
     final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
@@ -57,11 +104,24 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
 
     if (notificationProvider.errorMessage.isEmpty) {
       if (option == "Solicitud de Servicio") {
-        if (mounted) {
-          Navigator.push(
-            rootContext,
-            MaterialPageRoute(builder: (rootContext) => const HomePage()),
-          );
+        if (_identificador == "Cliente") {
+          if (mounted) {
+            Navigator.push(
+              rootContext,
+              MaterialPageRoute(builder: (rootContext) => const HomePage()),
+            );
+          }
+        } else {
+          if (status == 0) {
+            _showJobDialog(context, title, desc, idModulo);
+          } else {
+            if (mounted) {
+              Navigator.push(
+                rootContext,
+                MaterialPageRoute(builder: (rootContext) => const HomePage()),
+              );
+            }
+          }
         }
       }
       if (option == "Mensajes") {
@@ -69,20 +129,18 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
         if (mounted) {
           Navigator.push(
             rootContext,
-            MaterialPageRoute(builder: (rootContext) => ChatViewPage(idProveedor: ordersProvider.idProvedor, proveedor: ordersProvider.correoProv)),
+            MaterialPageRoute(builder: (rootContext) => ChatViewPage(idProveedor: ordersProvider.idProvedor, idCliente: ordersProvider.idCliente, proveedor: ordersProvider.correoProv)),
           );
         }
       }
       if (option == "Comentarios") {
-        await ordersProvider.getOrder(idModulo);
         if (mounted) {
-          Navigator.push(rootContext, MaterialPageRoute(builder: (rootContext) => DetailsOrderPage(order: ordersProvider.dataorden)));
+          Navigator.push(rootContext, MaterialPageRoute(builder: (rootContext) => DetailsOrderPage(idOrder: idModulo)));
         }
       }
       if (option == "Ordenes de Trabajo") {
-        await ordersProvider.getOrder(idModulo);
         if (mounted) {
-          Navigator.push(rootContext, MaterialPageRoute(builder: (rootContext) => DetailsOrderPage(order: ordersProvider.dataorden)));
+          Navigator.push(rootContext, MaterialPageRoute(builder: (rootContext) => DetailsOrderPage(idOrder: idModulo)));
         }
       }
     } else {
@@ -96,10 +154,12 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
   Widget build(BuildContext context) {
     final notificationProvider = Provider.of<NotificationProvider>(context);
     final ordersProvider = Provider.of<OrdersProvider>(context);
+    final provProvider = Provider.of<ProvedorProvider>(context);
     final rootContext = context;
     return Scaffold(
       appBar: const HeadUtil(),
-      body: notificationProvider.isLoading || ordersProvider.isLoading
+      backgroundColor: AppColors.backgroundSecondColor,
+      body: notificationProvider.isLoading || ordersProvider.isLoading || provProvider.isLoading
           ? const Center(child: Spinner())
           : notificationProvider.dataNotificaciones.isNotEmpty
               ? ListView.builder(
@@ -116,7 +176,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                       idNotificacion: notificacion.idNotificacion,
                       idModulo: notificacion.idModulo,
                       onTap: () {
-                        _onMenuOptionSelected(rootContext, notificacion.tipo, notificacion.idNotificacion, notificacion.idModulo, notificacion.idNotificacion, notificacion.status);
+                        _onMenuOptionSelected(rootContext, notificacion.tipo, notificacion.idNotificacion, notificacion.idModulo, notificacion.idNotificacion, notificacion.status, notificacion.tipo, notificacion.cuerpo);
                       },
                     );
                   },
@@ -155,17 +215,21 @@ class NotificacionCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
       child: Card(
-        color: leido ? Colors.grey[200] : Colors.white,
+        color: leido ? AppColors.white : AppColors.purple,
         child: ListTile(
-          leading: Icon(
-            leido ? Icons.notifications : Icons.notifications_active,
-            color: leido ? Colors.grey : Colors.blue,
+          leading: CircleAvatar(
+            radius: 35,
+            backgroundColor: leido ? AppColors.backgroundIcons : AppColors.purpleSecond,
+            child: Icon(
+              leido ? Icons.notifications : Icons.notifications_active,
+              color: leido ? AppColors.backgroundSecondColor : AppColors.purple,
+            ),
           ),
           title: Text(
             titulo,
-            style: TextStyle(
-              fontWeight: leido ? FontWeight.normal : FontWeight.bold,
-              color: Colors.black87,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppColors.activeBlack,
             ),
           ),
           subtitle: Padding(
@@ -175,26 +239,21 @@ class NotificacionCard extends StatelessWidget {
               children: [
                 Text(
                   descripcion,
-                  style: const TextStyle(color: Colors.black54),
+                  style: const TextStyle(
+                    color: AppColors.activeBlack,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   hora,
-                  style: const TextStyle(color: Colors.black45, fontSize: 12),
+                  style: TextStyle(
+                    color: leido ? AppColors.activeBlack : AppColors.white,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
           ),
-          trailing: !leido
-              ? Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.blue,
-                  ),
-                )
-              : null,
           onTap: onTap,
         ),
       ),

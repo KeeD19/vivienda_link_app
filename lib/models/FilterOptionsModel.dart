@@ -4,7 +4,7 @@ class FilterOptionsModel {
   final double monto;
   final int idProveedor;
   final String nombreProvedor;
-  final selfie;
+  final dynamic selfie;
   final int minHoras;
   final double precioTotal;
   final double estrellas;

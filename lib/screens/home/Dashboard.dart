@@ -1,10 +1,16 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:vivienda_link_app/providers/Provedor_provider.dart';
 import 'package:vivienda_link_app/utils/Colors_Utils.dart';
+import '../../providers/Auth_provider.dart';
 import '../../providers/Orders_provider.dart';
 import '../../utils/AddSolicitudEmergent.dart';
+import '../../utils/CardOption.dart';
+import '../../utils/DetailsPopularOption.dart';
 import '../../utils/FilterOptionsEmergent.dart';
-import '../../utils/PaymentDialog.dart';
 import '../../utils/ScaffoldMessengerUtil.dart';
 import '../../utils/SpinnerLoader.dart';
 import '../../screens/orders/DetailsOrders.dart';
@@ -22,6 +28,12 @@ class DashboardPage extends StatefulWidget {
 class _OrdersScreenState extends State<DashboardPage> {
   // ignore: non_constant_identifier_names
   final TextEditingController _SearchController = TextEditingController();
+  TextEditingController paisController = TextEditingController();
+  TextEditingController provinciaController = TextEditingController();
+  TextEditingController cantonesController = TextEditingController();
+  TextEditingController distritoController = TextEditingController();
+  TextEditingController presupuestoController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   int selectId = 0;
   int activePage = 0;
   String _errorSearch = "";
@@ -29,38 +41,45 @@ class _OrdersScreenState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+
     final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
-    ordersProvider.getOrders();
-    ordersProvider.getServicios();
-    ordersProvider.getServiciosPopulares();
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final provProvider = Provider.of<ProvedorProvider>(context, listen: false);
+
+    authProvider.getTypeUser();
+    if (authProvider.typeUser == 3) {
+      ordersProvider.getOrders();
+      ordersProvider.getServicios();
+      ordersProvider.getServiciosPopulares();
+    } else {
+      provProvider.getOrders();
+    }
   }
 
-  Widget slider(order) {
+  Widget slider(order, double width) {
     return SizedBox(
-      width: 200, // Tamaño fijo para asegurar uniformidad
-      height: 300,
-      child: mainOrdersCard(order),
+      width: width,
+      height: 200,
+      child: mainOrdersCard(order, width),
     );
   }
 
-  Widget mainOrdersCard(order) {
+  Widget mainOrdersCard(order, double width) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => DetailsOrderPage(order: order)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => DetailsOrderPage(idOrder: order.idOrdenTrabajo)));
       },
       child: Container(
-        padding: const EdgeInsets.all(8.0),
+        margin: const EdgeInsets.all(0),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.05),
+          color: AppColors.backgroundIcons,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 15,
-              // offset: const Offset(5, 5),
+              color: AppColors.backgroundIcons.withOpacity(0.05),
+              blurRadius: AppColors.border,
             ),
           ],
-          // border: Border.all(color: AppColors.backgroundColor, width: 2),
-          borderRadius: BorderRadius.circular(30.0),
+          borderRadius: BorderRadius.circular(AppColors.border),
         ),
         child: Stack(
           children: [
@@ -70,65 +89,43 @@ class _OrdersScreenState extends State<DashboardPage> {
                   padding: const EdgeInsets.only(bottom: 5),
                   child: Container(
                     alignment: Alignment.topCenter,
-                    height: 90,
-                    width: 140,
+                    height: 100,
+                    width: width,
                     decoration: BoxDecoration(
-                      color: AppColors.blueSecondColor,
-                      boxShadow: [
+                      color: AppColors.backgroundIcons,
+                      boxShadow: const [
                         BoxShadow(
-                          color: AppColors.blueSecondColor.withOpacity(0.05),
-                          blurRadius: 15,
-                          offset: const Offset(5, 5),
+                          blurRadius: AppColors.border,
                         ),
                       ],
-                      borderRadius: BorderRadius.circular(25.0),
-                      image: const DecorationImage(image: AssetImage('assets/images/logoVivienda.jpeg'), fit: BoxFit.cover, scale: 0.5),
+                      borderRadius: BorderRadius.circular(AppColors.border),
+                      image: const DecorationImage(image: AssetImage('assets/images/logoVivienda.jpeg'), fit: BoxFit.cover, scale: 0.6),
                     ),
                   )),
             ),
-
-            // Positioned(
-            //   right: 8,
-            //   top: 8,
-            //   child: CircleAvatar(
-            //     backgroundColor: AppColors.backgroundColor,
-            //     radius: 15,
-            //     child: Image.asset(
-            //       'assets/icons/add.png',
-            //       color: Colors.white,
-            //       height: 15,
-            //     ),
-            //   ),
-            // ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 5),
                 child: ListTile(
                     title: Text(
-                      order.orden.toUpperCase(),
+                      order.orden,
                       style: GoogleFonts.inter(
-                        fontSize: 11,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
+                        color: AppColors.white,
                       ),
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.left,
                     ),
                     subtitle: Text(
-                      order.proveedor.toUpperCase(),
+                      order.proveedor != null ? order.proveedor.toUpperCase() : order.cliente.toUpperCase(),
                       style: GoogleFonts.inter(
-                        fontSize: 11,
+                        fontSize: 10,
+                        color: AppColors.white,
                         // fontWeight: FontWeight.bold,
                       ),
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.left,
                     )),
-                // child: Text(
-                //   order.orden.toUpperCase(),
-                //   style: GoogleFonts.inter(
-                //     fontSize: 14,
-                //     fontWeight: FontWeight.bold,
-                //   ),
-                //   textAlign: TextAlign.center,
-                // ),
               ),
             ),
           ],
@@ -140,513 +137,536 @@ class _OrdersScreenState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     final ordersProvider = Provider.of<OrdersProvider>(context);
-    final ordenesPropias = ordersProvider.data;
-    final serviciosPopulares = ordersProvider.dataServiciosPopulares;
     // selectId = 1;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final cardWidth = screenWidth * 0.47;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final provedoresProvider = Provider.of<ProvedorProvider>(context);
     return Scaffold(
-        body: ordersProvider.isLoading || ordenesPropias == null || serviciosPopulares == null
+        backgroundColor: AppColors.backgroundColor,
+        body: ordersProvider.isLoading || authProvider.isLoading
             ? const Center(child: Spinner())
-            : SizedBox(
-                height: screenHeight * 1,
-                width: screenWidth * 1,
-                child: SingleChildScrollView(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 20.0),
-                      child: Row(
-                        children: [
-                          Container(
-                            height: 45.0,
-                            width: screenWidth * 0.9,
-                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: _errorSearch == "" ? Border.all(color: AppColors.backgroundColor) : Border.all(color: AppColors.errorColor),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.backgroundColor.withOpacity(0.15),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 0),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
+            : authProvider.typeUser == 3
+                ? SizedBox(
+                    height: screenHeight,
+                    width: screenWidth * 1,
+                    child: SingleChildScrollView(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 20.0),
+                          child: _buildSearchBar(screenWidth),
+                        ),
+                        SizedBox(
+                          height: screenHeight * 0.052,
+                          width: screenWidth * 0.96,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SizedBox(
-                                  height: 45.0,
-                                  width: screenWidth * 0.65,
-                                  child: TextField(
-                                    controller: _SearchController,
-                                    decoration: const InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: 'Buscar',
-                                    ),
-                                    onChanged: (value) => value,
-                                  ),
-                                ),
-                                IconButton(
-                                    onPressed: () async {
-                                      setState(() {
-                                        final scaffoldContext = context;
-                                        if (_SearchController.text.isNotEmpty) {
+                              children: ordersProvider.dataServicios.map((servicio) {
+                                return _buildServiceItem(
+                                  context,
+                                  servicio.id,
+                                  servicio.nombreServicio,
+                                  selectId,
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                        _searchResults == true ? SizedBox(height: screenHeight * 0.020) : const Center(),
+                        _searchResults == true
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                                child: _buildTittleItem('Resultados'),
+                              )
+                            : const Center(),
+                        _searchResults == true
+                            ? SizedBox(
+                                width: screenWidth,
+                                height: screenHeight * 0.32,
+                                child: ListView.separated(
+                                  itemCount: ordersProvider.dataServiciosFiltrados.length,
+                                  physics: const BouncingScrollPhysics(),
+                                  padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                                  scrollDirection: Axis.horizontal,
+                                  separatorBuilder: (_, __) => const SizedBox(width: 10),
+                                  itemBuilder: (context, index) {
+                                    final option = ordersProvider.dataServiciosFiltrados[index];
+                                    return ServicioCard(
+                                      type: "filtro",
+                                      servicio: option,
+                                      width: cardWidth,
+                                      height: screenHeight * 0.5,
+                                      onAddSolicitud: () => {
+                                        // _showBottomSheet(orden.idProveedor, context, "Reporte");
+                                        setState(() {
                                           showDialog(
                                             context: context,
+                                            barrierDismissible: false,
                                             builder: (BuildContext context) {
-                                              return FilterOptionsEmergent(
-                                                onSubmitted: (pais, estado, municipio, presupuesto) async {
-                                                  await ordersProvider.getServiciosFiltrados(_SearchController.text, pais, estado, municipio, presupuesto);
-                                                  if (ordersProvider.errorMessage.isEmpty == true) {
-                                                    _searchResults = true;
-                                                    _SearchController.text = "";
-                                                  } else {
-                                                    showCustomSnackBar(scaffoldContext, ordersProvider.errorMessage, isError: true);
-                                                    _SearchController.text = "";
-                                                  }
-                                                },
+                                              return AddSolicitudEmergent(
+                                                onSubmitted: (status) async {},
+                                                options: option,
                                               );
                                             },
                                           );
-                                        } else {
-                                          _errorSearch = "Se necesita la busqueda";
-                                        }
-                                      });
-                                    },
-                                    icon: const Icon(Icons.search))
-                              ],
-                            ),
-                          ),
-                          // SizedBox(width: screenWidth * 0.01),
-                          // Container(
-                          //   height: 45.0,
-                          //   width: screenWidth * 0.11,
-                          //   padding: const EdgeInsets.symmetric(
-                          //       horizontal: 10.0),
-                          //   decoration: BoxDecoration(
-                          //     color: AppColors.backgroundColor,
-                          //     boxShadow: [
-                          //       BoxShadow(
-                          //         color: AppColors.backgroundColor
-                          //             .withOpacity(0.5),
-                          //         blurRadius: 10,
-                          //         offset: const Offset(0, 0),
-                          //       ),
-                          //     ],
-                          //     borderRadius: BorderRadius.circular(10.0),
-                          //   ),
-                          //   child: Image.asset('assets/icons/adjust.png',
-                          //       color: Colors.white),
-                          // ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: screenHeight * 0.04,
-                      width: screenWidth * 0.96,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            for (int i = 0; i < ordersProvider.dataServicios.length; i++)
-                              GestureDetector(
-                                onTap: () async {
-                                  setState(() {
-                                    selectId = ordersProvider.dataServicios[i].id;
-                                    final scaffoldContext = context;
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return FilterOptionsEmergent(
-                                          onSubmitted: (pais, estado, municipio, presupuesto) async {
-                                            await ordersProvider.getServiciosFiltrados(ordersProvider.dataServicios[i].nombreServicio, pais, estado, municipio, presupuesto);
-                                            if (ordersProvider.errorMessage.isEmpty == true) {
-                                              _searchResults = true;
-                                              _SearchController.text = "";
-                                            } else {
-                                              showCustomSnackBar(scaffoldContext, ordersProvider.errorMessage, isError: true);
-                                              _SearchController.text = "";
-                                            }
-                                          },
-                                        );
+                                        })
                                       },
                                     );
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        ordersProvider.dataServicios[i].nombreServicio,
-                                        style: TextStyle(
-                                          color: selectId == ordersProvider.dataServicios[i].id ? AppColors.backgroundColor : Colors.black.withOpacity(0.7),
-                                          fontSize: 16.0,
-                                        ),
-                                      ),
-                                      if (selectId == ordersProvider.dataServicios[i].id)
-                                        const CircleAvatar(
-                                          radius: 3,
-                                          backgroundColor: AppColors.backgroundColor,
-                                        ),
-                                    ],
-                                  ),
+                                  },
                                 ),
-                              ),
-                          ],
-                        ),
-                      ),
+                              )
+                            : const Center(),
+                        SizedBox(height: screenHeight * 0.010),
+                        ordersProvider.data.isNotEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                                child: _buildTittleItem('Mis Trabajos'),
+                              )
+                            : const Center(),
+                        SizedBox(height: screenHeight * 0.010),
+                        ordersProvider.data.isNotEmpty
+                            ? SizedBox(
+                                height: screenHeight * 0.3,
+                                width: screenWidth,
+                                child: ListView.builder(
+                                  itemCount: ordersProvider.data.length,
+                                  scrollDirection: Axis.horizontal,
+                                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                                  physics: const BouncingScrollPhysics(),
+                                  itemBuilder: (itemBuilder, index) {
+                                    final order = ordersProvider.data[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 10), // Espacio entre tarjetas
+                                      child: slider(order, cardWidth),
+                                    );
+                                    // return slider(order);
+                                  },
+                                ),
+                              )
+                            : const Center(),
+                        SizedBox(height: screenHeight * 0.010),
+                        ordersProvider.dataServiciosPopulares.isNotEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                                child: _buildTittleItem('Popular'),
+                              )
+                            : const Center(),
+                        SizedBox(height: screenHeight * 0.020),
+                        ordersProvider.dataServiciosPopulares.isNotEmpty
+                            ? SizedBox(
+                                width: screenWidth,
+                                height: screenHeight * 0.32,
+                                child: ListView.separated(
+                                  itemCount: ordersProvider.dataServiciosPopulares.length,
+                                  physics: const BouncingScrollPhysics(),
+                                  padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                                  scrollDirection: Axis.horizontal,
+                                  separatorBuilder: (_, __) => const SizedBox(width: 10),
+                                  itemBuilder: (context, index) {
+                                    final option = ordersProvider.dataServiciosPopulares[index];
+                                    return ServicioCard(
+                                      type: "popular",
+                                      servicio: option,
+                                      width: cardWidth,
+                                      height: screenHeight * 0.5,
+                                      onAddSolicitud: () => {
+                                        setState(() {
+                                          setState(() {
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => DetailsPopularOption(options: option)));
+                                          });
+                                        })
+                                      },
+                                    );
+                                  },
+                                ),
+                              )
+                            : const Center()
+                      ]),
                     ),
-                    _searchResults == true ? SizedBox(height: screenHeight * 0.020) : const Center(),
-                    _searchResults == true
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Resultados',
-                                  style: TextStyle(
-                                    color: Colors.black.withOpacity(0.7),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.0,
+                  )
+                : SizedBox(
+                    height: screenHeight * 1,
+                    width: screenWidth * 1,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          provedoresProvider.orderData.isNotEmpty
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                                  child: _buildTittleItem('Mis Trabajos'),
+                                )
+                              : const Center(),
+                          SizedBox(height: screenHeight * 0.020),
+                          provedoresProvider.orderData.isNotEmpty
+                              ? SizedBox(
+                                  // height: 200,
+                                  height: screenHeight * 0.3,
+                                  width: screenWidth * 0.99,
+                                  child: ListView.builder(
+                                    itemCount: provedoresProvider.orderData.length,
+                                    scrollDirection: Axis.horizontal,
+                                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                                    physics: const BouncingScrollPhysics(),
+                                    itemBuilder: (itemBuilder, index) {
+                                      final order = provedoresProvider.orderData[index];
+                                      // bool active = index == activePage;
+                                      return Padding(
+                                        padding: const EdgeInsets.only(right: 10), // Espacio entre tarjetas
+                                        child: slider(order, cardWidth),
+                                      );
+                                      // return slider(order);
+                                    },
+                                  ),
+                                )
+                              : const Center(),
+                        ],
+                      ),
+                    )));
+  }
+
+  Widget _buildSearchBar(double screenWidth) {
+    return Container(
+      height: 55.0,
+      width: screenWidth,
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      decoration: BoxDecoration(
+        color: AppColors.fondSearchColor,
+        border: _errorSearch == "" ? Border.all(color: AppColors.backgroundColor) : Border.all(color: AppColors.errorColor),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.backgroundColor,
+            blurRadius: 10,
+            offset: Offset(0, 0),
+          ),
+        ],
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _SearchController,
+              cursorColor: Colors.white,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                hintText: 'Buscar',
+                hintStyle: TextStyle(color: AppColors.white),
+              ),
+              style: const TextStyle(color: AppColors.white),
+            ),
+          ),
+          IconButton(
+            onPressed: () => _onSearch(),
+            icon: const Icon(Icons.search, color: AppColors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onSearch() {
+    setState(() {
+      if (_SearchController.text.isNotEmpty) {
+        _showBottomSheet(context, _SearchController.text);
+      } else {
+        _errorSearch = "Se necesita la busqueda";
+      }
+    });
+  }
+
+  Widget _buildServiceItem(BuildContext context, int serviceId, String serviceName, int selectedId) {
+    final isSelected = selectedId == serviceId;
+
+    return GestureDetector(
+      onTap: () => _onServiceSelected(context, serviceId, serviceName),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.grey.shade300 : AppColors.white,
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              serviceName,
+              style: TextStyle(
+                color: isSelected ? AppColors.skyBlue : AppColors.activeBlack,
+                fontSize: 14.0,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onServiceSelected(BuildContext context, int serviceId, String serviceName) {
+    final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
+    setState(() {
+      selectId = serviceId;
+      final scaffoldContext = context;
+      _showBottomSheet(context, serviceName);
+    });
+  }
+
+  Widget _buildTittleItem(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        color: AppColors.white,
+        fontWeight: FontWeight.bold,
+        fontSize: 22.0,
+      ),
+    );
+  }
+
+  void _showBottomSheet(BuildContext contexto, String servicio) {
+    final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return FractionallySizedBox(
+              heightFactor: 0.75,
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        const Text(
+                          "Filtro de busqueda",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                controller: paisController,
+                                decoration: InputDecoration(
+                                  labelText: "País",
+                                  border: const OutlineInputBorder(),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(color: Colors.red, width: 0.8),
                                   ),
                                 ),
-                                Image.asset(
-                                  'assets/icons/more.png',
-                                  color: AppColors.backgroundColor,
-                                  height: 20,
-                                ),
-                              ],
-                            ),
-                          )
-                        : const Center(),
-                    _searchResults == true
-                        ? SizedBox(
-                            height: screenHeight * 0.17,
-                            width: screenWidth * 0.99,
-                            child: ListView.builder(
-                              itemCount: ordersProvider.dataServiciosFiltrados.length,
-                              physics: const BouncingScrollPhysics(),
-                              padding: const EdgeInsets.only(left: 10.0),
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (itemBuilder, index) {
-                                final option = ordersProvider.dataServiciosFiltrados[index];
-                                return Container(
-                                    width: screenWidth * 0.60,
-                                    margin: const EdgeInsets.only(right: 10, left: 10, bottom: 10),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: AppColors.blueSecondColor.withOpacity(0.1),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 5),
-                                        ),
-                                      ],
-                                      borderRadius: BorderRadius.circular(20.0),
-                                    ),
-                                    child: Padding(
-                                        padding: const EdgeInsets.all(10),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Positioned(
-                                                left: 0,
-                                                top: 5,
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.star,
-                                                      color: Colors.yellow[700],
-                                                    ),
-                                                    Text(option.estrellas.toStringAsFixed(2))
-                                                  ],
-                                                )),
-                                            Row(
-                                              children: [
-                                                option.selfie != null
-                                                    ? ClipOval(
-                                                        child: Image.memory(
-                                                          base64Decode(option.selfie!),
-                                                          width: 60,
-                                                          height: 60,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      )
-                                                    : ClipOval(
-                                                        child: Image.asset(
-                                                          'assets/images/user.png',
-                                                          width: 60,
-                                                          height: 60,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                const SizedBox(width: 10.0),
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    children: [
-                                                      Text(
-                                                        option.nombreProvedor,
-                                                        style: TextStyle(
-                                                          color: AppColors.backgroundColor.withOpacity(0.7),
-                                                          fontWeight: FontWeight.w800,
-                                                        ),
-                                                        overflow: TextOverflow.ellipsis,
-                                                        maxLines: 2, // Limita el texto a 2 líneas
-                                                      ),
-                                                      Text(
-                                                        '\$${option.precioTotal.toStringAsFixed(2)}',
-                                                        style: TextStyle(
-                                                          color: AppColors.backgroundColor.withOpacity(0.4),
-                                                          fontWeight: FontWeight.w600,
-                                                          fontSize: 12.0,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Positioned(
-                                                  right: 20,
-                                                  bottom: 20,
-                                                  child: CircleAvatar(
-                                                    backgroundColor: AppColors.blueSecondColor,
-                                                    radius: 15,
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          // Navigator.push(context, MaterialPageRoute(builder: (context) => AddOrderPage(options: option)));
-                                                          showDialog(
-                                                            context: context,
-                                                            barrierDismissible: false,
-                                                            builder: (BuildContext context) {
-                                                              return AddSolicitudEmergent(
-                                                                onSubmitted: (status) async {},
-                                                                options: option,
-                                                              );
-                                                            },
-                                                          );
-                                                        });
-                                                      },
-                                                      child: Image.asset(
-                                                        'assets/icons/add.png',
-                                                        color: Colors.white,
-                                                        height: 15,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          ],
-                                        )));
-                              },
-                            ),
-                          )
-                        : const Center(),
-                    SizedBox(height: screenHeight * 0.020),
-                    ordersProvider.data.isNotEmpty
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Mis Trabajos',
-                                  style: TextStyle(
-                                    color: Colors.black.withOpacity(0.7),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.0,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Este campo es obligatorio';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                controller: provinciaController,
+                                decoration: InputDecoration(
+                                  labelText: "Provincia",
+                                  border: const OutlineInputBorder(),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(color: Colors.red, width: 0.8),
                                   ),
                                 ),
-                                Image.asset(
-                                  'assets/icons/more.png',
-                                  color: AppColors.backgroundColor,
-                                  height: 20,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Este campo es obligatorio';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                controller: cantonesController,
+                                decoration: InputDecoration(
+                                  labelText: "Cantones",
+                                  border: const OutlineInputBorder(),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(color: Colors.red, width: 0.8),
+                                  ),
                                 ),
-                              ],
-                            ),
-                          )
-                        : const Center(),
-                    SizedBox(height: screenHeight * 0.020),
-                    ordersProvider.data.isNotEmpty
-                        ? SizedBox(
-                            // height: 200,
-                            height: screenHeight * 0.3,
-                            width: screenWidth * 0.99,
-                            child: ListView.builder(
-                              itemCount: ordersProvider.data.length,
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(horizontal: 5),
-                              physics: const BouncingScrollPhysics(),
-                              itemBuilder: (itemBuilder, index) {
-                                final order = ordersProvider.data[index];
-                                // bool active = index == activePage;
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 10), // Espacio entre tarjetas
-                                  child: slider(order),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Este campo es obligatorio';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                controller: distritoController,
+                                decoration: InputDecoration(
+                                  labelText: "Distrito",
+                                  border: const OutlineInputBorder(),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(color: Colors.red, width: 0.8),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Este campo es obligatorio';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                controller: presupuestoController,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                decoration: InputDecoration(
+                                  labelText: "Presupuesto",
+                                  border: const OutlineInputBorder(),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(color: Colors.red, width: 0.8),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Este campo es obligatorio';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Spacer(),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                await ordersProvider.getServiciosFiltrados(
+                                  servicio,
+                                  paisController.text,
+                                  provinciaController.text,
+                                  cantonesController.text,
+                                  presupuestoController.text,
+                                  distritoController.text,
                                 );
-                                // return slider(order);
-                              },
+                                if (ordersProvider.errorMessage.isEmpty == true) {
+                                  _searchResults = true;
+                                  paisController.clear();
+                                  provinciaController.clear();
+                                  cantonesController.clear();
+                                  distritoController.clear();
+                                  presupuestoController.clear();
+                                  Navigator.pop(context);
+                                } else {
+                                  Navigator.pop(context);
+                                  showCustomSnackBar(contexto, ordersProvider.errorMessage, isError: true);
+                                }
+                              } else {
+                                // Algún campo no es válido
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Por favor, completa todos los campos')),
+                                );
+                              }
+                              // final ordersProvider = Provider.of<OrdersProvider>(contexto, listen: false);
+                              // if (type == "Calificacion") {
+                              //   if (localRating != 0 && _formKey.currentState!.validate()) {
+                              //     Navigator.pop(context);
+                              //     await ordersProvider.saveResenia(idProvedor, localRating, commentController.text);
+                              //     if (ordersProvider.errorMessage.isEmpty == true) {
+                              //       showCustomSnackBar(contexto, ordersProvider.successMessage, isError: false);
+                              //     } else {
+                              //       showCustomSnackBar(contexto, ordersProvider.errorMessage, isError: true);
+                              //     }
+                              //     commentController.clear();
+                              //     localRating = 0;
+                              //     selectedRating = 0;
+                              //   } else {
+                              //     Navigator.pop(context);
+                              //     showCustomSnackBar(contexto, "Todos los campos son requeridos", isError: true);
+                              //   }
+                              // } else {
+                              //   if (_formKey.currentState!.validate()) {
+                              //     Navigator.pop(context);
+                              //     await ordersProvider.saveReporte(idProvedor, commentController.text);
+                              //     if (ordersProvider.errorMessage.isEmpty == true) {
+                              //       showCustomSnackBar(contexto, ordersProvider.successMessage, isError: false);
+                              //     } else {
+                              //       showCustomSnackBar(contexto, ordersProvider.errorMessage, isError: true);
+                              //     }
+                              //     commentController.clear();
+                              //     localRating = 0;
+                              //     selectedRating = 0;
+                              //   } else {
+                              //     Navigator.pop(context);
+                              //     showCustomSnackBar(contexto, "Escribe tu reporte", isError: true);
+                              //   }
+                              // }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.orangeColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                             ),
-                          )
-                        : const Center(),
-                    SizedBox(height: screenHeight * 0.020),
-                    ordersProvider.dataServiciosPopulares.isNotEmpty
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Popular',
-                                  style: TextStyle(
-                                    color: Colors.black.withOpacity(0.7),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.0,
-                                  ),
-                                ),
-                                Image.asset(
-                                  'assets/icons/more.png',
-                                  color: AppColors.backgroundColor,
-                                  height: 20,
-                                ),
-                              ],
+                            child: const Text(
+                              "Buscar",
+                              style: TextStyle(
+                                color: AppColors.white,
+                                fontSize: 18,
+                              ),
                             ),
-                          )
-                        : const Center(),
-                    SizedBox(height: screenHeight * 0.020),
-                    ordersProvider.dataServiciosPopulares.isNotEmpty
-                        ? SizedBox(
-                            height: screenHeight * 0.19,
-                            width: screenWidth * 0.99,
-                            child: ListView.builder(
-                              itemCount: ordersProvider.dataServiciosPopulares.length,
-                              physics: const BouncingScrollPhysics(),
-                              padding: const EdgeInsets.only(left: 10.0),
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (itemBuilder, index) {
-                                final optionPopular = ordersProvider.dataServiciosPopulares[index];
-                                return Container(
-                                    width: screenWidth * 0.60,
-                                    margin: const EdgeInsets.only(right: 10, left: 10, bottom: 10),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: AppColors.blueSecondColor.withOpacity(0.1),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 5),
-                                        ),
-                                      ],
-                                      borderRadius: BorderRadius.circular(20.0),
-                                    ),
-                                    child: Padding(
-                                        padding: const EdgeInsets.all(10),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Positioned(
-                                                left: 0,
-                                                top: 5,
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.star,
-                                                      color: Colors.yellow[700],
-                                                    ),
-                                                    Text(optionPopular.estrellas.toStringAsFixed(2))
-                                                  ],
-                                                )),
-                                            Row(
-                                              children: [
-                                                optionPopular.selfie != null
-                                                    ? ClipOval(
-                                                        child: Image.memory(
-                                                          base64Decode(optionPopular.selfie!),
-                                                          width: 60,
-                                                          height: 60,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      )
-                                                    : ClipOval(
-                                                        child: Image.asset(
-                                                          'assets/images/user.png',
-                                                          width: 60,
-                                                          height: 60,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                const SizedBox(width: 10.0),
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    children: [
-                                                      Text(
-                                                        optionPopular.nombreProvedor,
-                                                        style: TextStyle(
-                                                          color: AppColors.backgroundColor.withOpacity(0.7),
-                                                          fontWeight: FontWeight.w800,
-                                                        ),
-                                                        overflow: TextOverflow.ellipsis,
-                                                        maxLines: 2,
-                                                      ),
-                                                      Text(
-                                                        'Minimo de horas: ${optionPopular.minHoras}',
-                                                        style: TextStyle(
-                                                          color: AppColors.backgroundColor.withOpacity(0.4),
-                                                          fontWeight: FontWeight.w600,
-                                                          fontSize: 11.0,
-                                                        ),
-                                                        overflow: TextOverflow.ellipsis,
-                                                        maxLines: 2,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Positioned(
-                                                  right: 20,
-                                                  bottom: 20,
-                                                  child: CircleAvatar(
-                                                    backgroundColor: AppColors.blueSecondColor,
-                                                    radius: 15,
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        // setState(() {
-                                                        //   // Navigator.push(context, MaterialPageRoute(builder: (context) => AddOrderPage(options: option)));
-                                                        //   showDialog(
-                                                        //     context: context,
-                                                        //     barrierDismissible: false,
-                                                        //     builder: (context) {
-                                                        //       return PaymentPage(); // Monto de prueba
-                                                        //     },
-                                                        //   );
-                                                        // });
-                                                      },
-                                                      child: Image.asset(
-                                                        'assets/icons/add.png',
-                                                        color: Colors.white,
-                                                        height: 15,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        )));
-                              },
-                            ),
-                          )
-                        : const Center()
-                  ]),
-                ),
-              ));
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 5,
+                    right: 5,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.close,
+                        size: 30.0,
+                      ),
+                      onPressed: () {
+                        paisController.clear();
+                        provinciaController.clear();
+                        cantonesController.clear();
+                        distritoController.clear();
+                        presupuestoController.clear();
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }
