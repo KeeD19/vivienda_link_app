@@ -145,7 +145,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
                     );
                   },
                 )
-              : Text('Error: ${ordersProvider.errorMessage}'),
+              : const Text('Aún no hay pagos realizados'),
     );
   }
 }

@@ -43,14 +43,14 @@ class _EstadoSelectorDialogState extends State<EstadoSelectorDialog> {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: const Text('Tomar Foto'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _pickImage(ImageSource.camera);
-                },
-              ),
+              // ListTile(
+              //   leading: const Icon(Icons.camera_alt),
+              //   title: const Text('Tomar Foto'),
+              //   onTap: () {
+              //     Navigator.pop(context);
+              //     _pickImage(ImageSource.camera);
+              //   },
+              // ),
               ListTile(
                 leading: const Icon(Icons.photo_library),
                 title: const Text('Elegir de la Galería'),
@@ -95,7 +95,7 @@ class _EstadoSelectorDialogState extends State<EstadoSelectorDialog> {
             },
           ),
           const SizedBox(height: 20),
-          _imageBase64 != null
+          _imageBase64 != ""
               ? Column(
                   children: [
                     Image.memory(
@@ -111,7 +111,7 @@ class _EstadoSelectorDialogState extends State<EstadoSelectorDialog> {
           ElevatedButton.icon(
             onPressed: _takePhoto,
             icon: const Icon(Icons.camera_alt),
-            label: const Text('Tomar Foto'),
+            label: const Text('Seleccionar Imagen'),
           ),
         ],
       ),

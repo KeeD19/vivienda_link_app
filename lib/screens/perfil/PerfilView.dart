@@ -115,14 +115,14 @@ class _PerfilViewState extends State<PerfilView> {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Tomar Foto'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.camera);
-              },
-            ),
+            // ListTile(
+            //   leading: const Icon(Icons.camera_alt),
+            //   title: const Text('Tomar Foto'),
+            //   onTap: () {
+            //     Navigator.pop(context);
+            //     _pickImage(ImageSource.camera);
+            //   },
+            // ),
             ListTile(
               leading: const Icon(Icons.photo_library),
               title: const Text('Elegir de la Galería'),
@@ -451,25 +451,25 @@ class _PerfilViewState extends State<PerfilView> {
                     ElevatedButton(
                       onPressed: () => _showImageSourceOptions(),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.orangeColor, // Cambia el fondo del botón
+                        backgroundColor: AppColors.orangeColor,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10), // Define qué tan redondeado será
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Ajusta el padding
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       ),
                       child: const Row(
-                        mainAxisSize: MainAxisSize.min, // Ajusta el tamaño del Row al contenido
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             "Cambiar Foto",
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
-                          SizedBox(width: 10), // Espacio entre el texto y el ícono
+                          SizedBox(width: 10),
                           Icon(
                             Icons.camera_alt,
                             size: 20,
                             color: Colors.white,
-                          ), // Ícono de cámara
+                          ),
                         ],
                       ),
                     ),
