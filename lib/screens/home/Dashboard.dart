@@ -28,11 +28,12 @@ class DashboardPage extends StatefulWidget {
 class _OrdersScreenState extends State<DashboardPage> {
   // ignore: non_constant_identifier_names
   final TextEditingController _SearchController = TextEditingController();
-  TextEditingController paisController = TextEditingController();
-  TextEditingController provinciaController = TextEditingController();
-  TextEditingController cantonesController = TextEditingController();
+  // TextEditingController paisController = TextEditingController();
+  final TextEditingController paisController = TextEditingController(text: "Costa Rica");
+  TextEditingController provinciaController = TextEditingController(text: "San Jose");
   TextEditingController distritoController = TextEditingController();
   TextEditingController presupuestoController = TextEditingController();
+  String? canton;
   final _formKey = GlobalKey<FormState>();
   int selectId = 0;
   int activePage = 0;
@@ -48,6 +49,7 @@ class _OrdersScreenState extends State<DashboardPage> {
 
     authProvider.getTypeUser();
     if (authProvider.typeUser == 3) {
+      canton = "Santa Ana";
       ordersProvider.getOrders();
       ordersProvider.getServicios();
       ordersProvider.getServiciosPopulares();
@@ -463,6 +465,8 @@ class _OrdersScreenState extends State<DashboardPage> {
                             children: [
                               TextFormField(
                                 controller: paisController,
+                                readOnly: true,
+                                enabled: false,
                                 decoration: InputDecoration(
                                   labelText: "País",
                                   border: const OutlineInputBorder(),
@@ -471,16 +475,12 @@ class _OrdersScreenState extends State<DashboardPage> {
                                     borderSide: const BorderSide(color: Colors.red, width: 0.8),
                                   ),
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Este campo es obligatorio';
-                                  }
-                                  return null;
-                                },
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
                                 controller: provinciaController,
+                                readOnly: true,
+                                enabled: false,
                                 decoration: InputDecoration(
                                   labelText: "Provincia",
                                   border: const OutlineInputBorder(),
@@ -489,29 +489,32 @@ class _OrdersScreenState extends State<DashboardPage> {
                                     borderSide: const BorderSide(color: Colors.red, width: 0.8),
                                   ),
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Este campo es obligatorio';
-                                  }
-                                  return null;
-                                },
                               ),
                               const SizedBox(height: 10),
-                              TextFormField(
-                                controller: cantonesController,
-                                decoration: InputDecoration(
-                                  labelText: "Cantones",
-                                  border: const OutlineInputBorder(),
-                                  errorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: const BorderSide(color: Colors.red, width: 0.8),
-                                  ),
+                              const Text(
+                                'Canton:',
+                                style: TextStyle(
+                                  color: AppColors.activeBlack,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Este campo es obligatorio';
-                                  }
-                                  return null;
+                              ),
+                              DropdownButton<String>(
+                                value: canton,
+                                isExpanded: true,
+                                items: [
+                                  'Santa Ana',
+                                  'Escazu',
+                                ].map((String provincia) {
+                                  return DropdownMenuItem<String>(
+                                    value: provincia,
+                                    child: Text(provincia),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setModalState(() {
+                                    canton = newValue;
+                                  });
                                 },
                               ),
                               const SizedBox(height: 10),
@@ -567,15 +570,12 @@ class _OrdersScreenState extends State<DashboardPage> {
                                   servicio,
                                   paisController.text,
                                   provinciaController.text,
-                                  cantonesController.text,
+                                  canton!,
                                   presupuestoController.text,
                                   distritoController.text,
                                 );
                                 if (ordersProvider.errorMessage.isEmpty == true) {
                                   _searchResults = true;
-                                  paisController.clear();
-                                  provinciaController.clear();
-                                  cantonesController.clear();
                                   distritoController.clear();
                                   presupuestoController.clear();
                                   Navigator.pop(context);
@@ -652,9 +652,6 @@ class _OrdersScreenState extends State<DashboardPage> {
                         size: 30.0,
                       ),
                       onPressed: () {
-                        paisController.clear();
-                        provinciaController.clear();
-                        cantonesController.clear();
                         distritoController.clear();
                         presupuestoController.clear();
                         Navigator.pop(context);

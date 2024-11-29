@@ -7,7 +7,7 @@ import '../env.dart';
 class ApiService {
   // final String baseUrl = "http://localhost:5023/api"; // Local
   // final String baseUrl = "http://192.168.55.155:5023/api"; // movil
-  // final channel = WebSocketChannel.connect(Uri.parse('ws://localhost:5023/chat'));
+  // // final channel = WebSocketChannel.connect(Uri.parse('ws://localhost:5023/chat'));
   final String baseUrl = "https://exclusifyapi-hhbpfra4cyfrgtdr.eastus-01.azurewebsites.net/api"; // DESARROLLO
 
   // Método para obtener datos (GET)

@@ -53,10 +53,15 @@ class AuthProvider with ChangeNotifier {
       // _typeUser = int.tryParse(idUser)!;
 
       if (token != "") {
+        String identificador = tipo == "3" ? "Cliente" : "Proveedor";
         if (tokenFirebase == "") {
           FirebaseMessaging messaging = FirebaseMessaging.instance;
           String? firebaseToken = await messaging.getToken();
-          Map<String, dynamic> dataChange = {'id': int.tryParse(idUser), 'tokenFirebase': firebaseToken, "identificador": "Cliente"};
+          Map<String, dynamic> dataChange = {
+            'id': int.tryParse(idUser),
+            'tokenFirebase': firebaseToken,
+            "identificador": identificador,
+          };
           final tokenUpdate = await _apiService.postData('v1/Auth/SaveToken', dataChange);
           int statusCode = tokenUpdate['statusCode'];
           if (statusCode == 200) {
@@ -64,15 +69,26 @@ class AuthProvider with ChangeNotifier {
           }
         }
         String? tokenLocal = await _saveLocalService.getData("tokenFirebase");
+        debugPrint('local guardado: $tokenLocal');
 
-        if (tokenLocal == null || tokenLocal == "") {
+        if (tokenLocal == null || tokenLocal == '0') {
           FirebaseMessaging messaging = FirebaseMessaging.instance;
           String? firebaseToken = await messaging.getToken();
-          Map<String, dynamic> dataChange = {'id': int.tryParse(idUser), 'tokenFirebase': firebaseToken, "identificador": "Cliente"};
-          final tokenUpdate = await _apiService.postData('v1/Auth/SaveToken', dataChange);
-          int statusCode = tokenUpdate['statusCode'];
-          if (statusCode == 200) {
-            await _saveLocalService.saveData("tokenFirebase", firebaseToken!);
+          debugPrint('token obtenido: $firebaseToken');
+          Map<String, dynamic> dataChange = {
+            'id': int.tryParse(idUser),
+            'tokenFirebase': firebaseToken,
+            "identificador": identificador,
+          };
+          try {
+            final tokenUpdate = await _apiService.postData('v1/Auth/SaveToken', dataChange);
+            int statusCode = tokenUpdate['statusCode'];
+            if (statusCode == 200) {
+              await _saveLocalService.saveData("tokenFirebase", firebaseToken!);
+            }
+          } catch (e) {
+            debugPrint('local guardado: $e');
+            print(e);
           }
         }
 

@@ -128,7 +128,7 @@ class _OrdersScreenState extends State<DetailsOrderPage> {
                           builder: (BuildContext context) {
                             return EstadoSelectorDialog(
                               initialEstado: orden.estado,
-                              file: orden.archivo,
+                              file: orden.archivo ?? "",
                             );
                           },
                         );
@@ -236,10 +236,6 @@ class _OrdersScreenState extends State<DetailsOrderPage> {
                     description: _formatDate(orden.citaFecha),
                   ),
                   SizedBox(height: screenHeight * 0.01),
-                  DescriptionView(
-                    title: 'Fecha',
-                    description: _formatDate(orden.citaFecha),
-                  ),
                   SizedBox(height: screenHeight * 0.01),
                   DescriptionView(
                     title: 'Recomendación',
